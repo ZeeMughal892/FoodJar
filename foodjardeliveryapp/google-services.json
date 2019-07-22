@@ -1,0 +1,122 @@
+{
+  "project_info": {
+    "project_number": "789677535845",
+    "firebase_url": "https://foodjar-9b50a.firebaseio.com",
+    "project_id": "foodjar-9b50a",
+    "storage_bucket": "foodjar-9b50a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789677535845:android:0d7a55889e022a18",
+        "android_client_info": {
+          "package_name": "com.foodjar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789677535845-826ko22h62bpv09vt31rn43ued175445.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.foodjar",
+            "certificate_hash": "327fa728f505ed3ec9bc77e22b09f2ff25432fb0"
+          }
+        },
+        {
+          "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw_CSSEcBX4JZJFA9z5AFNSgZ3NgISkM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789677535845:android:0104ee100955a29e",
+        "android_client_info": {
+          "package_name": "com.foodjaradmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789677535845-6nl1m51n4e03nioc21c2cl27jakiq4oc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.foodjaradmin",
+            "certificate_hash": "327fa728f505ed3ec9bc77e22b09f2ff25432fb0"
+          }
+        },
+        {
+          "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw_CSSEcBX4JZJFA9z5AFNSgZ3NgISkM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789677535845:android:671b4f7591f9fa9f",
+        "android_client_info": {
+          "package_name": "com.zeeshan.foodjardeliveryapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789677535845-duvb3tj2vrnmnobem5k2dlmkkh467ajc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zeeshan.foodjardeliveryapp",
+            "certificate_hash": "83c16738ffb3fc941eafe772c24012a96fd9cbdd"
+          }
+        },
+        {
+          "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw_CSSEcBX4JZJFA9z5AFNSgZ3NgISkM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789677535845-krh6hg4fr4jiosjaj86g4uo0kgu0iki6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
