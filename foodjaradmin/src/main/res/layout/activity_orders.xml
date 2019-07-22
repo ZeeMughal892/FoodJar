@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBgGray"
+
     tools:context="com.zeeshan.foodjaradmin.Orders">
 
     <androidx.appcompat.widget.Toolbar
