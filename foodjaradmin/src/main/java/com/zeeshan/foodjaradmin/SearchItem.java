@@ -22,7 +22,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.zeeshan.foodjaradmin.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjaradmin.adapter.ItemAdapter;
 import com.zeeshan.foodjaradmin.entities.Items;
 import com.zeeshan.foodjaradmin.utils.PreferenceUtils;
@@ -37,16 +38,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchItem extends AppCompatActivity {
+
     private RecyclerView recyclerView;
     private DatabaseReference databaseProducts;
     private ProgressBar progressBar;
     List<Items> itemsList;
     SearchView ed_Search;
 
-    static public String loginUserID;
-    static public String loginUserName;
-
-
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
     DrawerLayout drawerLayout;
     Toolbar toolbar;
     ActionBarDrawerToggle actionBarDrawerToggle;
@@ -59,28 +59,26 @@ public class SearchItem extends AppCompatActivity {
         setContentView(R.layout.activity_search_item);
         init();
         setUpToolbar();
-        final Intent intent = getIntent();
-        if (intent.hasExtra("userID") && intent.hasExtra("username")) {
-            loginUserID = getIntent().getStringExtra("userID");
-            loginUserName = getIntent().getStringExtra("username");
-        } else {
-            loginUserID = PreferenceUtils.getUserID(this);
-            loginUserName = PreferenceUtils.getUsername(this);
-        }
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.home:
                         Intent intent = new Intent(getApplicationContext(), SearchItem.class);
-                        intent.putExtra("userID", loginUserID);
-                        intent.putExtra("username", loginUserName);
                         startActivity(intent);
                         finish();
                         break;
-                    case R.id.orders:
-                        startActivity(new Intent(getApplicationContext(), Orders.class));
+                    case R.id.pendingOrders:
+                        startActivity(new Intent(getApplicationContext(), PendingOrders.class));
+                        break;
+                    case R.id.deliveredOrders:
+                        startActivity(new Intent(getApplicationContext(), DeliveredOrders.class));
+                        break;
+                    case R.id.assignedOrders:
+                        startActivity(new Intent(getApplicationContext(), AssignedOrders.class));
+                        break;
+                    case R.id.offers:
+                        startActivity(new Intent(getApplicationContext(), Offers.class));
                         break;
                     case R.id.users:
                         startActivity(new Intent(getApplicationContext(), AllUsers.class));
@@ -92,9 +90,6 @@ public class SearchItem extends AppCompatActivity {
                         startActivity(new Intent(getApplicationContext(), RegisterDeliveryBoy.class));
                         break;
                     case R.id.logout:
-                        PreferenceUtils.saveUsername(null, getApplicationContext());
-                        PreferenceUtils.savePassword(null, getApplicationContext());
-                        PreferenceUtils.saveUserID(null, getApplicationContext());
                         Intent intent1 = new Intent(SearchItem.this, LoginAdmin.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -102,7 +97,7 @@ public class SearchItem extends AppCompatActivity {
                         finish();
                         break;
                 }
-                return true;
+                return false;
             }
         });
 
@@ -152,7 +147,6 @@ public class SearchItem extends AppCompatActivity {
     }
 
     private void setUpToolbar() {
-
         setSupportActionBar(toolbar);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -184,14 +178,11 @@ public class SearchItem extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
-
         if (id == R.id.btnAdd) {
             startActivity(new Intent(SearchItem.this, AddNewItem.class));
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -217,12 +208,13 @@ public class SearchItem extends AppCompatActivity {
     }
 
     private void init() {
-        databaseProducts = FirebaseDatabase.getInstance().getReference("Products");
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        databaseProducts = FirebaseDatabase.getInstance().getReference("products");
         progressBar = findViewById(R.id.progressBar);
         recyclerView = findViewById(R.id.recyclerView);
         ed_Search = findViewById(R.id.ed_Search);
         itemsList = new ArrayList<>();
-
         drawerLayout = findViewById(R.id.drawerLayout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.navigationView);

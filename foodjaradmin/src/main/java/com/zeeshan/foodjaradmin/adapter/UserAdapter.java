@@ -24,13 +24,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtUsername, txtPhone, txtAddress, txtShopName;
+        TextView txtFullName,txtEmail, txtPhone, txtAddress, txtShopName;
 
 
         MyViewHolder(View itemView) {
             super(itemView);
 
-            txtUsername = itemView.findViewById(R.id.txtUsername);
+            txtFullName = itemView.findViewById(R.id.txtFullName);
+            txtEmail = itemView.findViewById(R.id.txtEmail);
             txtPhone = itemView.findViewById(R.id.txtPhone);
             txtAddress = itemView.findViewById(R.id.txtShopAddress);
             txtShopName = itemView.findViewById(R.id.txtShopName);
@@ -54,7 +55,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         User user = userList.get(position);
-        holder.txtUsername.setText(user.getUserName());
+        holder.txtFullName.setText(user.getFullName());
+        holder.txtEmail.setText(user.getEmail());
         holder.txtAddress.setText(user.getAddress());
         holder.txtPhone.setText(user.getPhoneNumber());
         holder.txtShopName.setText(user.getShopName());
@@ -79,7 +81,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.MyViewHolder> 
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (User user : userListFull) {
-                    if (user.getUserName().toLowerCase().contains(filterPattern) ||
+                    if (user.getFullName().toLowerCase().contains(filterPattern) ||
+                            user.getEmail().toLowerCase().contains(filterPattern) ||
                             user.getShopName().toLowerCase().contains(filterPattern) ||
                             user.getAddress().toLowerCase().contains(filterPattern) ||
                             user.getPhoneNumber().toLowerCase().contains(filterPattern)) {

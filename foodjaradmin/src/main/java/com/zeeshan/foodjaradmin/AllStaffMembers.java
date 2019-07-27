@@ -35,7 +35,10 @@ public class AllStaffMembers extends AppCompatActivity {
     List<Staff> staffList;
     SearchView ed_Search;
     Toolbar toolbar;
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +107,7 @@ public class AllStaffMembers extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarUser);
         staffList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseStaff = FirebaseDatabase.getInstance().getReference("Staff");
+        databaseStaff = FirebaseDatabase.getInstance().getReference("staff");
         ed_Search=findViewById(R.id.ed_Search);
 
     }

@@ -98,13 +98,16 @@ public class AllDeliveryBoys extends AppCompatActivity {
             }
         });
     }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     private void init() {
         recyclerViewDeliveryBoys = findViewById(R.id.recyclerViewDeliveryBoys);
         progressBar = findViewById(R.id.progressBarDeliveryBoys);
         deliveryBoyList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("Delivery Boys");
+        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("deliveryBoys");
         ed_Search=findViewById(R.id.ed_Search);
 
     }

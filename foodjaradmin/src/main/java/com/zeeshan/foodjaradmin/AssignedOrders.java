@@ -14,29 +14,32 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.zeeshan.foodjaradmin.R;
-import com.zeeshan.foodjaradmin.adapter.OrderRequestAdapter;
-import com.zeeshan.foodjaradmin.entities.OrderRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.zeeshan.foodjaradmin.adapter.OrderRequestAdapter;
+import com.zeeshan.foodjaradmin.entities.OrderRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Orders extends AppCompatActivity {
+public class AssignedOrders extends AppCompatActivity {
     RecyclerView recyclerViewOrder;
     DatabaseReference databaseOrderRequests;
     ProgressBar progressBar;
     List<OrderRequest> orderRequestList;
     Toolbar toolbar;
-
+    String status = "ASSIGNED";
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_orders);
+        setContentView(R.layout.activity_assigned_orders);
         init();
         setUpToolbar();
         recyclerViewOrder.setHasFixedSize(true);
@@ -50,11 +53,11 @@ public class Orders extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderRequestList.clear();
-
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
-                    orderRequestList.add(orderRequest);
-
+                    if (status.equals(orderRequest.getOrderStatus())) {
+                        orderRequestList.add(orderRequest);
+                    }
                 }
                 OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
                 recyclerViewOrder.setAdapter(orderRequestAdapter);
@@ -63,7 +66,7 @@ public class Orders extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(Orders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AssignedOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
             }
         });
@@ -73,13 +76,11 @@ public class Orders extends AppCompatActivity {
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
-
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Orders.this, SearchItem.class));
-
+                startActivity(new Intent(AssignedOrders.this, SearchItem.class));
             }
         });
     }
@@ -89,7 +90,7 @@ public class Orders extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarOrder);
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
 
     }
 }

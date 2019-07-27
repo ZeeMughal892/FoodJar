@@ -14,7 +14,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zeeshan.foodjaradmin.OrderDetails;
-import com.zeeshan.foodjaradmin.Orders;
+import com.zeeshan.foodjaradmin.PendingOrders;
 import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.entities.DeliveryBoy;
 import com.zeeshan.foodjaradmin.entities.Order;
@@ -59,7 +59,7 @@ public class AssignDeliveryBoyAdapter extends RecyclerView.Adapter<AssignDeliver
         final View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_delivery_boy, viewGroup, false);
         final MyViewHolder myViewHolder = new MyViewHolder(itemView);
 
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
 
         cardViewBoys.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +73,7 @@ public class AssignDeliveryBoyAdapter extends RecyclerView.Adapter<AssignDeliver
                         int position = myViewHolder.getAdapterPosition();
                         String amount = currentOrder.getTotalAmount();
                         String userId = currentOrder.getUserID();
-                        String status = "Assigned";
+                        String status = "ASSIGNED";
                         String assignTo = deliveryBoyList.get(position).getBoyID();
                         String itemCount = currentOrder.getItemCount();
                         List<Order> orders = new ArrayList<>();
@@ -82,7 +82,7 @@ public class AssignDeliveryBoyAdapter extends RecyclerView.Adapter<AssignDeliver
                         OrderRequest orderRequest = new OrderRequest(orderId, userId, orders, amount, status, assignTo, itemCount);
                         databaseOrderRequests.child(orderId).setValue(orderRequest);
                         Toast.makeText(itemView.getContext(), "Order Assign To : " + boyName, Toast.LENGTH_SHORT).show();
-                        itemView.getContext().startActivity(new Intent(itemView.getContext(), Orders.class));
+                        itemView.getContext().startActivity(new Intent(itemView.getContext(), PendingOrders.class));
 
                     }
                     @Override

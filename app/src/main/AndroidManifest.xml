@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.zeeshan.foodjar">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".utils.Home"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name="com.zeeshan.foodjar.activities.ShoppingCart"></activity>
-        <activity android:name="com.zeeshan.foodjar.activities.ItemDetail" />
-        <activity android:name="com.zeeshan.foodjar.activities.LoginUser" />
-        <activity android:name="com.zeeshan.foodjar.activities.RegisterUser" />
-        <activity android:name="com.zeeshan.foodjar.activities.OrderHistory" />
-        <activity android:name="com.zeeshan.foodjar.activities.SearchItem" />
-        <activity android:name="com.zeeshan.foodjar.activities.Splash">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".OrderDetails"></activity>
+        <activity android:name=".ShoppingCart" />
+        <activity android:name=".ItemDetail" />
+        <activity android:name=".LoginUser" />
+        <activity android:name=".RegisterUser" />
+        <activity android:name=".OrderHistory" />
+        <activity android:name=".SearchItem" />
+        <activity android:name=".Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

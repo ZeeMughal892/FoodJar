@@ -12,6 +12,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.entities.Items;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,16 +35,17 @@ import com.squareup.picasso.Picasso;
 
 public class AddNewItem extends AppCompatActivity {
 
-    private EditText ed_Name, ed_Category, ed_Price, ed_Quantity, ed_Unit, ed_Description;
-    private static final int PICK_IMAGE_REQUEST = 1;
-    private ImageButton btnSelectImage;
-    private Uri imageUri;
+    EditText ed_Name, ed_Price, ed_Quantity, ed_StockPerPack, ed_Description;
+    static final int PICK_IMAGE_REQUEST = 1;
+    ImageButton btnSelectImage;
+    Uri imageUri;
     ProgressBar progressBar;
-
-    private StorageReference storageReference;
-    private DatabaseReference databaseProducts;
-
+    StorageReference storageReference;
+    DatabaseReference databaseProducts;
+    Spinner spinnerCategories, spinnerUnit;
     Toolbar toolbar;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,6 @@ public class AddNewItem extends AppCompatActivity {
                 openFileChooser();
             }
         });
-
     }
 
     @Override
@@ -75,30 +78,15 @@ public class AddNewItem extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void init() {
-        databaseProducts = FirebaseDatabase.getInstance().getReference("Products");
-        storageReference = FirebaseStorage.getInstance().getReference("Products");
-
-        btnSelectImage = findViewById(R.id.btnSelectImage);
-        ed_Name = findViewById(R.id.ed_Name);
-        ed_Category = findViewById(R.id.ed_Category);
-        ed_Price = findViewById(R.id.ed_Price);
-        ed_Quantity = findViewById(R.id.ed_Quantity);
-        ed_Unit = findViewById(R.id.ed_Unit);
-        ed_Description = findViewById(R.id.ed_Description);
-        toolbar = findViewById(R.id.toolbar);
-        progressBar=findViewById(R.id.progressBarAdd);
-    }
-
-
     private void addItem() {
         progressBar.setVisibility(View.VISIBLE);
 
         final String itemName = ed_Name.getText().toString().trim();
-        final String itemCategory = ed_Category.getText().toString().trim();
+        final String itemCategory = spinnerCategories.getSelectedItem().toString().trim();
         final String itemPrice = ed_Price.getText().toString().trim();
         final String itemQuantity = ed_Quantity.getText().toString().trim();
-        final String itemUnit = ed_Unit.getText().toString().trim();
+        final String itemQuantityPerPack = ed_StockPerPack.getText().toString().trim();
+        final String itemUnit = spinnerUnit.getSelectedItem().toString().trim();
         final String itemDescription = ed_Description.getText().toString().trim();
 
         if (TextUtils.isEmpty(itemName)) {
@@ -109,8 +97,8 @@ public class AddNewItem extends AppCompatActivity {
             Toast.makeText(this, "Please Enter Item Price", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(itemQuantity)) {
             Toast.makeText(this, "Please Enter Item Quantity", Toast.LENGTH_SHORT).show();
-        } else if (TextUtils.isEmpty(itemUnit)) {
-            Toast.makeText(this, "Please Enter Unit of Quantity", Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(itemQuantityPerPack)) {
+            Toast.makeText(this, "Please Enter Quantity Per Pack", Toast.LENGTH_SHORT).show();
         } else if (imageUri == null) {
             Toast.makeText(this, "Please Select an Item Image", Toast.LENGTH_SHORT).show();
         } else {
@@ -126,7 +114,7 @@ public class AddNewItem extends AppCompatActivity {
                             String url = uri.toString();
 
                             String itemId = databaseProducts.push().getKey();
-                            Items items = new Items(itemId, itemName, itemCategory, itemQuantity, itemUnit, itemPrice, url, itemDescription, SearchItem.loginUserID);
+                            Items items = new Items(itemId, itemName, itemCategory, itemQuantity, itemQuantityPerPack, itemUnit, itemPrice, url, itemDescription, firebaseUser.getUid());
                             databaseProducts.child(itemId).setValue(items);
                             clearFields();
                             Toast.makeText(AddNewItem.this, "Item Added Successfully", Toast.LENGTH_SHORT).show();
@@ -146,6 +134,11 @@ public class AddNewItem extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
@@ -157,17 +150,8 @@ public class AddNewItem extends AppCompatActivity {
         ed_Price.setText(null);
         ed_Description.setText(null);
         ed_Quantity.setText(null);
-        ed_Category.setText(null);
-        ed_Unit.setText(null);
-
+        ed_StockPerPack.setText(null);
         btnSelectImage.setImageResource(R.drawable.ic_add_circle_black_24dp);
-    }
-
-    private void openFileChooser() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
     private void setUpToolbar() {
@@ -184,6 +168,13 @@ public class AddNewItem extends AppCompatActivity {
         });
     }
 
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -193,5 +184,22 @@ public class AddNewItem extends AppCompatActivity {
 
             Picasso.get().load(imageUri).into(btnSelectImage);
         }
+    }
+
+    private void init() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        databaseProducts = FirebaseDatabase.getInstance().getReference("products");
+        storageReference = FirebaseStorage.getInstance().getReference("products");
+        btnSelectImage = findViewById(R.id.btnSelectImage);
+        ed_Name = findViewById(R.id.ed_Name);
+        spinnerCategories = findViewById(R.id.spinnerCategory);
+        spinnerUnit = findViewById(R.id.spinnerUnit);
+        ed_Price = findViewById(R.id.ed_Price);
+        ed_Quantity = findViewById(R.id.ed_Quantity);
+        ed_StockPerPack = findViewById(R.id.ed_QuantityPerPack);
+        ed_Description = findViewById(R.id.ed_Description);
+        toolbar = findViewById(R.id.toolbar);
+        progressBar = findViewById(R.id.progressBarAdd);
     }
 }

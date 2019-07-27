@@ -8,7 +8,6 @@
         android:icon="@drawable/ic_add_black_24dp"
         app:showAsAction="always"
         android:iconTint="@color/colorPrimary"
-
         android:orderInCategory="0"/>
 
 </menu>

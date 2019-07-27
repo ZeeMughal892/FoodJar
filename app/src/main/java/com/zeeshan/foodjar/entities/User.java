@@ -1,13 +1,11 @@
 package com.zeeshan.foodjar.entities;
 
-
-
 public class User {
 
     private String userID;
-    private String userName;
+    private String fullName;
+    private String email;
     private String password;
-    private String role;
     private String shopName;
     private String phoneNumber;
     private String address;
@@ -16,11 +14,11 @@ public class User {
     public User() {
     }
 
-    public User(String userID, String userName, String password, String role, String shopName, String phoneNumber, String address, String referredBy) {
+    public User(String userID, String fullName, String email, String password, String shopName, String phoneNumber, String address, String referredBy) {
         this.userID = userID;
-        this.userName = userName;
+        this.fullName = fullName;
+        this.email = email;
         this.password = password;
-        this.role = role;
         this.shopName = shopName;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -35,12 +33,20 @@ public class User {
         this.userID = userID;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -49,14 +55,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getShopName() {

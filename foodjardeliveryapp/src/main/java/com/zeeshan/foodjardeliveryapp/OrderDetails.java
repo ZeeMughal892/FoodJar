@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +49,9 @@ public class OrderDetails extends AppCompatActivity {
     OrderRequest currentOrder;
     User currentUser;
     OrderAdapter orderAdapter;
-
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    final String orderId = OrderDetails.OrderID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +59,7 @@ public class OrderDetails extends AppCompatActivity {
         init();
         setUpToolbar();
         loadOrder();
-
+        getCurrentOrder();
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerViewOrderItems.setHasFixedSize(true);
         recyclerViewOrderItems.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
@@ -65,33 +69,38 @@ public class OrderDetails extends AppCompatActivity {
         btnMark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String orderId = OrderDetails.OrderID;
-                databaseOrderRequests.child(orderId).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        currentOrder = dataSnapshot.getValue(OrderRequest.class);
-                        String amount = currentOrder.getTotalAmount();
-                        String userId = currentOrder.getUserID();
-                        String status = "Delivered";
-                        String assignTo = MyOrders.loginUserID;
-                        String itemCount = currentOrder.getItemCount();
-                        List<Order> orders = new ArrayList<>();
-                        String boyName = MyOrders.loginUserName;
-                        orders = currentOrder.getOrderList();
-                        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders, amount, status, assignTo, itemCount);
-                        databaseOrderRequests.child(orderId).setValue(orderRequest);
-                        Toast.makeText(OrderDetails.this, "Order Marked as Delivered" + boyName, Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(OrderDetails.this, MyOrders.class));
-
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+              updateStatus();
             }
         });
+    }
+
+    private void getCurrentOrder(){
+        databaseOrderRequests.child(orderId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentOrder = dataSnapshot.getValue(OrderRequest.class);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void updateStatus(){
+        String amount = currentOrder.getTotalAmount();
+        String userId = currentOrder.getUserID();
+        String status = "DELIVERED";
+        String assignTo = firebaseUser.getUid();
+        String itemCount = currentOrder.getItemCount();
+        List<Order> orders = currentOrder.getOrderList();
+        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders, amount, status, assignTo, itemCount);
+
+        databaseOrderRequests.child(orderId).setValue(orderRequest);
+        Toast.makeText(OrderDetails.this, "Order Marked as Delivered", Toast.LENGTH_SHORT).show();
+
+
+        startActivity(new Intent(OrderDetails.this, MyOrders.class));
+        finish();
     }
 
     private void loadOrder() {
@@ -99,6 +108,7 @@ public class OrderDetails extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentOrder = dataSnapshot.getValue(OrderRequest.class);
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(Long.parseLong(currentOrder.getOrderID()));
 
@@ -106,28 +116,23 @@ public class OrderDetails extends AppCompatActivity {
                 int mMonth = calendar.get(Calendar.MONTH);
                 int mDay = calendar.get(Calendar.DAY_OF_MONTH);
                 String date = mDay + "/" + mMonth + "/" + mYear;
-
                 txtOrderId.setText(currentOrder.getOrderID());
                 txtDate.setText(date);
                 txtTotalAmount.setText(currentOrder.getTotalAmount());
                 txtOrderStatus.setText(currentOrder.getOrderStatus());
-
                 databaseUsers.child(currentOrder.getUserID()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         currentUser = dataSnapshot.getValue(User.class);
-
                         String name = currentUser.getUserName();
                         String phone = currentUser.getPhoneNumber();
                         String shop = currentUser.getShopName();
                         String address = currentUser.getAddress();
-
                         txtUsername.setText(name);
                         txtPhoneNumber.setText(phone);
                         txtShopAddress.setText(shop);
                         txtShopName.setText(address);
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
@@ -137,14 +142,12 @@ public class OrderDetails extends AppCompatActivity {
                 recyclerViewOrderItems.setAdapter(orderAdapter);
                 progressBar.setVisibility(View.INVISIBLE);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
@@ -168,7 +171,8 @@ public class OrderDetails extends AppCompatActivity {
         txtDate = findViewById(R.id.txtDate);
         txtOrderStatus = findViewById(R.id.txtOrderStatus);
         btnMark = findViewById(R.id.btnMark);
-
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
 
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
 
@@ -176,9 +180,9 @@ public class OrderDetails extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarOrderDetails);
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("Delivery Boys");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        databaseUsers = FirebaseDatabase.getInstance().getReference("users");
+        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("deliveryBoys");
     }
 
 }

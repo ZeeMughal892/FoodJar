@@ -27,7 +27,7 @@
             android:fontFamily="@font/aclonica"
             android:text="@string/add_new_item"
             android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
 
     </androidx.appcompat.widget.Toolbar>
@@ -84,7 +84,6 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:autofillHints="@string/item_name"
                     android:background="@drawable/bg_edittext"
                     android:ems="10"
                     android:hint="@string/name"
@@ -126,22 +125,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/ed_Category"
+                <Spinner
+                    android:id="@+id/spinnerCategory"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:entries="@array/Categories"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:autofillHints="@string/item_name"
                     android:background="@drawable/bg_edittext"
-                    android:ems="10"
-                    android:hint="@string/e_g_fruit_vegetable_cold_drink_etc"
                     android:inputType="textNoSuggestions"
-                    android:paddingStart="10dp"
-                    android:paddingLeft="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView13"
@@ -249,7 +244,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/unitContainer"
+                android:id="@+id/quantityPerPackContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -261,6 +256,56 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/quantityContainer">
+
+                <TextView
+                    android:id="@+id/textView02"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/quantity_per_pack"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/ed_QuantityPerPack"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/bg_edittext"
+                    android:ems="10"
+                    android:hint="@string/quantity_per_pack"
+                    android:inputType="number"
+                    android:paddingStart="10dp"
+                    android:paddingLeft="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView02"
+                    tools:ignore="RtlSymmetry" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/unitContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/quantityPerPackContainer">
 
                 <TextView
                     android:id="@+id/textView12"
@@ -277,21 +322,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/ed_Unit"
+                <Spinner
+                    android:id="@+id/spinnerUnit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
+                    android:entries="@array/Unit"
+                    android:padding="0dp"
                     android:layout_marginRight="8dp"
                     android:background="@drawable/bg_edittext"
                     android:ems="10"
-                    android:hint="@string/e_g_kg_dozen_items"
-                    android:inputType="text"
-                    android:paddingStart="10dp"
-                    android:paddingLeft="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView12"

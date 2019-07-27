@@ -62,7 +62,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.MyViewHolder> 
         String Stock = " " + order.getItemQuantity() + " " + order.getItemUnit();
         String Price = "Rs. " + order.getItemPrice();
 
-
         holder.itemNameCart.setText(order.getItemName());
         holder.itemCategoryCart.setText(order.getItemCategory());
         holder.itemPriceCart.setText(Price);

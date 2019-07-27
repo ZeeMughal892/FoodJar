@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zeeshan.foodjar.R;
-import com.zeeshan.foodjar.activities.ItemDetail;
+import com.zeeshan.foodjar.ItemDetail;
 import com.zeeshan.foodjar.entities.Products;
 import com.squareup.picasso.Picasso;
 

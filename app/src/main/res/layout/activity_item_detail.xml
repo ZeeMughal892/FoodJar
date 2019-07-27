@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBgGray"
-    tools:context="com.zeeshan.foodjar.activities.ItemDetail">
+    tools:context="com.zeeshan.foodjar.ItemDetail">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,15 +20,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:fontFamily="@font/aclonica"
-                android:text="@string/item_details"
-                android:layout_gravity="center"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:fontFamily="@font/aclonica"
+            android:text="@string/item_details"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
 
     </androidx.appcompat.widget.Toolbar>
 

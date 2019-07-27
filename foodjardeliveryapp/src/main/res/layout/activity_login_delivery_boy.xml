@@ -71,14 +71,14 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:text="@string/username"
+            android:text="@string/email"
             android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/ed_Username"
+            android:id="@+id/ed_Email"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -88,8 +88,8 @@
             android:layout_marginRight="8dp"
             android:background="@drawable/bg_edittext"
             android:ems="10"
-            android:hint="@string/username"
-            android:inputType="textPersonName"
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
             android:paddingStart="10dp"
             android:paddingLeft="10dp"
             app:layout_constraintEnd_toEndOf="parent"

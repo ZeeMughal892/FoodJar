@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +35,8 @@ public class MyOldOrders extends AppCompatActivity {
     List<OrderRequest> orderRequestList;
     Toolbar toolbar;
 
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +54,10 @@ public class MyOldOrders extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderRequestList.clear();
-                String status = "Delivered";
+                String status = "DELIVERED";
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
-                    if (MyOrders.loginUserID.equals(orderRequest.getAssignTo()) && status.equals(orderRequest.getOrderStatus())) {
+                    if (firebaseUser.getUid().equals(orderRequest.getAssignTo()) && status.equals(orderRequest.getOrderStatus())) {
                         orderRequestList.add(orderRequest);
                     }
                 }
@@ -85,12 +89,19 @@ public class MyOldOrders extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private void init() {
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
         recyclerViewOrder = findViewById(R.id.recyclerViewOrders);
         progressBar = findViewById(R.id.progressBarOrder);
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
 
     }
 }

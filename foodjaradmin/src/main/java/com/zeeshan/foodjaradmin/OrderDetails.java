@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.adapter.AssignDeliveryBoyAdapter;
 import com.zeeshan.foodjaradmin.adapter.OrderAdapter;
@@ -51,7 +53,8 @@ public class OrderDetails extends AppCompatActivity {
     Dialog dialogDeliveryBoys;
     List<DeliveryBoy> deliveryBoyList;
     AssignDeliveryBoyAdapter deliveryBoyAdapter;
-
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +87,6 @@ public class OrderDetails extends AppCompatActivity {
                 recyclerViewBoys = dialogDeliveryBoys.findViewById(R.id.recyclerViewSelectBoy);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
                 recyclerViewBoys.setLayoutManager(mLayoutManager);
-
                 deliveryBoyAdapter = new AssignDeliveryBoyAdapter(deliveryBoyList);
                 recyclerViewBoys.setAdapter(deliveryBoyAdapter);
             }
@@ -102,6 +104,10 @@ public class OrderDetails extends AppCompatActivity {
             }
         });
 
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     private void loadOrder() {
@@ -126,7 +132,7 @@ public class OrderDetails extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         currentUser = dataSnapshot.getValue(User.class);
 
-                        String name = currentUser.getUserName();
+                        String name = currentUser.getFullName();
                         String phone = currentUser.getPhoneNumber();
                         String shop = currentUser.getShopName();
                         String address = currentUser.getAddress();
@@ -168,6 +174,8 @@ public class OrderDetails extends AppCompatActivity {
     }
 
     private void init() {
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
         txtOrderId = findViewById(R.id.txtOrderID);
         txtUsername = findViewById(R.id.txtUserName);
         txtPhoneNumber = findViewById(R.id.txtPhone);
@@ -185,8 +193,8 @@ public class OrderDetails extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarOrderDetails);
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
-        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("Delivery Boys");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        databaseUsers = FirebaseDatabase.getInstance().getReference("users");
+        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("deliveryBoys");
     }
 }

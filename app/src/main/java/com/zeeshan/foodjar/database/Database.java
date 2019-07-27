@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Database extends SQLiteAssetHelper {
 
-    private static final String DB_NAME = "FoodjarDb.db";
+    private static final String DB_NAME = "FoodJarDB.db";
     private static final int DB_VER = 1;
 
     public Database(Context context) {
@@ -22,15 +22,17 @@ public class Database extends SQLiteAssetHelper {
 
     public void addToCart(Order order) {
         SQLiteDatabase db = getReadableDatabase();
-        String query = String.format("INSERT INTO CartItems(ItemID,ItemName,ItemCategory,ItemPrice,ItemQuantity,ItemUnit,ItemImage,UserID) VALUES('%s','%s','%s','%s','%s','%s','%s','%s')",
+        String query = String.format("INSERT INTO CartItems(ItemID,ItemName,ItemCategory,ItemPrice,ItemQuantity, ItemQuantityPerPack,ItemUnit,ItemImage,UserID,ItemDescription) VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
                 order.getItemID(),
                 order.getItemName(),
                 order.getItemCategory(),
                 order.getItemPrice(),
                 order.getItemQuantity(),
+                order.getItemQuantityPerPack(),
                 order.getItemUnit(),
                 order.getItemImage(),
-                order.getUserID());
+                order.getUserID(),
+                order.getItemDescription());
         db.execSQL(query);
     }
 
@@ -44,7 +46,7 @@ public class Database extends SQLiteAssetHelper {
         SQLiteDatabase db = getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        String[] sqlSelect = {"ItemID", "ItemName", "ItemCategory", "ItemPrice", "ItemQuantity", "ItemUnit", "ItemImage", "UserID"};
+        String[] sqlSelect = {"ItemID", "ItemName", "ItemCategory", "ItemPrice", "ItemQuantity","ItemQuantityPerPack", "ItemUnit", "ItemImage", "UserID","ItemDescription"};
         String where = "UserID =?";
         String[] selection_Args = {userID};
         String sqlTable = "CartItems";
@@ -60,9 +62,11 @@ public class Database extends SQLiteAssetHelper {
                         c.getString(c.getColumnIndex("ItemCategory")),
                         c.getString(c.getColumnIndex("ItemPrice")),
                         c.getString(c.getColumnIndex("ItemQuantity")),
+                        c.getString(c.getColumnIndex("ItemQuantityPerPack")),
                         c.getString(c.getColumnIndex("ItemUnit")),
                         c.getString(c.getColumnIndex("ItemImage")),
-                        c.getString(c.getColumnIndex("UserID"))
+                        c.getString(c.getColumnIndex("UserID")),
+                        c.getString(c.getColumnIndex("ItemDescription"))
                 ));
             } while (c.moveToNext());
         }

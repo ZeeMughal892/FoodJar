@@ -3,18 +3,20 @@ package com.zeeshan.foodjaradmin.entities;
 public class Staff {
     private String staffID;
     private String staffName;
+    private String staffEmail;
     private String staffPassword;
     private String staffPhoneNo;
-    private String role;
 
-    public Staff(){}
 
-    public Staff(String staffID, String staffName, String staffPassword, String staffPhoneNo, String role) {
+    public Staff() {
+    }
+
+    public Staff(String staffID, String staffName, String staffEmail, String staffPassword, String staffPhoneNo) {
         this.staffID = staffID;
         this.staffName = staffName;
+        this.staffEmail = staffEmail;
         this.staffPassword = staffPassword;
         this.staffPhoneNo = staffPhoneNo;
-        this.role = role;
     }
 
     public String getStaffID() {
@@ -33,6 +35,14 @@ public class Staff {
         this.staffName = staffName;
     }
 
+    public String getStaffEmail() {
+        return staffEmail;
+    }
+
+    public void setStaffEmail(String staffEmail) {
+        this.staffEmail = staffEmail;
+    }
+
     public String getStaffPassword() {
         return staffPassword;
     }
@@ -47,13 +57,5 @@ public class Staff {
 
     public void setStaffPhoneNo(String staffPhoneNo) {
         this.staffPhoneNo = staffPhoneNo;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 }

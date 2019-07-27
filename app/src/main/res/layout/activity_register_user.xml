@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.zeeshan.foodjar.activities.RegisterUser">
+    tools:context="com.zeeshan.foodjar.RegisterUser">
 
     <TextView
         android:id="@+id/textView10"
@@ -63,7 +63,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/usernameContainer"
+                android:id="@+id/fullNameContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -85,14 +85,14 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="@string/username"
+                    android:text="@string/full_name"
                     android:textColor="@color/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/ed_Username"
+                    android:id="@+id/ed_FullName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -100,16 +100,66 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:autofillHints="@string/username"
                     android:background="@drawable/bg_edittext"
                     android:ems="10"
-                    android:hint="@string/username"
+                    android:hint="@string/full_name"
                     android:inputType="textPersonName"
                     android:paddingStart="10dp"
                     android:paddingLeft="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView"
+                    tools:ignore="RtlSymmetry" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/emailContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fullNameContainer">
+
+                <TextView
+                    android:id="@+id/textView00"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/email"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="HardcodedText" />
+
+                <EditText
+                    android:id="@+id/ed_Email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/bg_edittext"
+                    android:ems="10"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:paddingStart="10dp"
+                    android:paddingLeft="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView00"
                     tools:ignore="RtlSymmetry" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -125,7 +175,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/usernameContainer">
+                app:layout_constraintTop_toBottomOf="@+id/emailContainer">
 
                 <TextView
                     android:id="@+id/textView1"
@@ -165,7 +215,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/shopnameContainer"
+                android:id="@+id/shopNameContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -187,7 +237,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="Shop Name"
+                    android:text="@string/shop_name"
                     android:textColor="@color/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -227,7 +277,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shopnameContainer">
+                app:layout_constraintTop_toBottomOf="@+id/shopNameContainer">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -308,9 +358,9 @@
                     android:gravity="start|top"
                     android:hint="@string/address"
                     android:inputType="textMultiLine"
-                    android:paddingTop="10dp"
                     android:paddingStart="10dp"
                     android:paddingLeft="10dp"
+                    android:paddingTop="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView4"
@@ -346,8 +396,8 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/ed_ReferredBy"
+                <Spinner
+                    android:id="@+id/spinnerReferredBy"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -355,18 +405,13 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:autofillHints="@string/username"
                     android:background="@drawable/bg_edittext"
-                    android:ems="10"
-                    android:hint="@string/referred_by"
-                    android:inputType="textPersonName"
-                    android:paddingStart="10dp"
-                    android:paddingLeft="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textView0"
                     tools:ignore="RtlSymmetry" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="0dp"
@@ -417,11 +462,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/aclonica"
-                    android:textAllCaps="false"
-                    android:padding="5dp"
                     android:background="@drawable/bg_btn_transparent"
+                    android:fontFamily="@font/aclonica"
+                    android:padding="5dp"
                     android:text="@string/sign_in_now"
+                    android:textAllCaps="false"
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp"
                     android:textStyle="bold" />

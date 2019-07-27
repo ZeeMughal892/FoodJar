@@ -7,9 +7,21 @@
             android:title="@string/home"
             android:icon="@drawable/ic_home_black_24dp"/>
         <item
-            android:id="@+id/orders"
-            android:title="@string/orders"
+            android:id="@+id/pendingOrders"
+            android:title="@string/pending_orders"
             android:icon="@drawable/ic_history_black_24dp"/>
+        <item
+            android:id="@+id/assignedOrders"
+            android:title="@string/assigned_orders"
+            android:icon="@drawable/ic_history_black_24dp"/>
+        <item
+            android:id="@+id/deliveredOrders"
+            android:title="@string/delivered_orders"
+            android:icon="@drawable/ic_history_black_24dp"/>
+        <item
+            android:id="@+id/offers"
+            android:title="@string/offers"
+            android:icon="@drawable/ic_local_offer_black_24dp"/>
         <item
             android:id="@+id/users"
             android:title="@string/users"

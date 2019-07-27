@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="@drawable/bg_gradient"
-    tools:context="com.zeeshan.foodjar.activities.Splash">
+    tools:context="com.zeeshan.foodjar.Splash">
 
 
     <ImageView

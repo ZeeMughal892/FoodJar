@@ -94,4 +94,5 @@
     <string name="mark_as_delivered">Mark As Delivered</string>
     <string name="total_amount_">Total Amount =</string>
     <string name="my_recent_orders">My Recent Orders</string>
+    <string name="email">Email</string>
 </resources>

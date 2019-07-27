@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBgGray"
 
-    tools:context="com.zeeshan.foodjaradmin.Orders">
+    tools:context="com.zeeshan.foodjaradmin.DeliveredOrders">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -25,9 +25,9 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:fontFamily="@font/aclonica"
-            android:text="@string/orders"
+            android:text="@string/delivered_orders"
             android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
 
     </androidx.appcompat.widget.Toolbar>

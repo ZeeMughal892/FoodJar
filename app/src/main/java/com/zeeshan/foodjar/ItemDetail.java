@@ -1,4 +1,4 @@
-package com.zeeshan.foodjar.activities;
+package com.zeeshan.foodjar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,7 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cepheuen.elegantnumberbutton.view.ElegantNumberButton;
-import com.zeeshan.foodjar.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjar.database.Database;
 import com.zeeshan.foodjar.entities.Order;
 import com.zeeshan.foodjar.entities.Products;
@@ -28,16 +29,15 @@ import com.squareup.picasso.Picasso;
 
 public class ItemDetail extends AppCompatActivity {
 
-    DatabaseReference databaseProducts;
     ImageView imgItem;
     TextView txtItemName, txtItemCategory, txtItemPrice, txtItemQuantity, txtDescription;
     Button btnAddToCart;
-
     ElegantNumberButton numberButton;
     static public String itemID;
     Products currentItem;
-    DatabaseReference databaseOrders;
-
+    DatabaseReference databaseOrders, databaseProducts;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
     Toolbar toolbar;
 
     @Override
@@ -45,9 +45,7 @@ public class ItemDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
         init();
-
         loadItemDetails();
-
         btnAddToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +58,6 @@ public class ItemDetail extends AppCompatActivity {
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
-
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,26 +89,29 @@ public class ItemDetail extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentItem = dataSnapshot.getValue(Products.class);
-                String Price;
-                String Items = "Items";
-                String Stock = "In Stock : " + currentItem.getItemStock() + " " + currentItem.getItemUnit() + " Left";
+                if (currentItem != null) {
+                    String Price;
+                    String Items = "ITEMS";
+                    String Stock = "In Stock : " + currentItem.getItemStock() + " " + currentItem.getItemUnit() + " Left";
 
-                if (Items.equals(currentItem.getItemUnit())) {
-                    Price = "$ " + currentItem.getItemPrice() + " /Item";
-                } else {
-                    Price = "$ " + currentItem.getItemPrice() + " /" + currentItem.getItemUnit();
+                    if (Items.equals(currentItem.getItemUnit())) {
+                        Price = "Rs. " + currentItem.getItemPrice() + " /Item";
+                    } else {
+                        Price = "Rs. " + currentItem.getItemPrice() + " /" + currentItem.getItemUnit();
+                    }
+                    txtItemName.setText(currentItem.getItemName());
+                    txtItemCategory.setText(currentItem.getItemCategory());
+                    txtItemPrice.setText(Price);
+                    txtDescription.setText(currentItem.getItemDescription());
+                    txtItemQuantity.setText(Stock);
+                    numberButton.setRange(1, Integer.parseInt(currentItem.getItemStock()));
+                    Picasso.get()
+                            .load(currentItem.getItemImage())
+                            .fit()
+                            .centerCrop()
+                            .placeholder(R.drawable.ic_noimage)
+                            .into(imgItem);
                 }
-                txtItemName.setText(currentItem.getItemName());
-                txtItemCategory.setText(currentItem.getItemCategory());
-                txtItemPrice.setText(Price);
-                txtDescription.setText(currentItem.getItemDescription());
-                txtItemQuantity.setText(Stock);
-                Picasso.get()
-                        .load(currentItem.getItemImage())
-                        .fit()
-                        .centerCrop()
-                        .placeholder(R.drawable.ic_noimage)
-                        .into(imgItem);
             }
 
             @Override
@@ -122,22 +122,20 @@ public class ItemDetail extends AppCompatActivity {
     }
 
     private void init() {
-        databaseProducts = FirebaseDatabase.getInstance().getReference("Products");
+        databaseProducts = FirebaseDatabase.getInstance().getReference("products");
+        databaseOrders = FirebaseDatabase.getInstance().getReference("orders");
         imgItem = findViewById(R.id.image_item_detail);
-
         txtItemName = findViewById(R.id.txtItemNameDetails);
         txtItemCategory = findViewById(R.id.txtItemCategoryDetails);
         txtItemPrice = findViewById(R.id.txtItemPriceDetails);
         txtItemQuantity = findViewById(R.id.txtItemQuantityDetails);
         txtDescription = findViewById(R.id.txtItemDescriptionDetails);
-
         btnAddToCart = findViewById(R.id.btnAddToCart);
         toolbar = findViewById(R.id.toolbar);
-
         numberButton = findViewById(R.id.numberButton);
 
-        databaseOrders = FirebaseDatabase.getInstance().getReference("Orders");
-
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
     }
 
     private void addItemsToCart() {
@@ -147,10 +145,12 @@ public class ItemDetail extends AppCompatActivity {
                 currentItem.getItemCategory(),
                 currentItem.getItemPrice(),
                 numberButton.getNumber(),
+                currentItem.getItemStockPerPack(),
                 currentItem.getItemUnit(),
                 currentItem.getItemImage(),
-                SearchItem.loginUserID
+                firebaseUser.getUid(),
+                currentItem.getItemDescription()
         ));
-        Toast.makeText(ItemDetail.this, "Added to ShoppingCart", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ItemDetail.this, "Added to Shopping Cart", Toast.LENGTH_SHORT).show();
     }
 }

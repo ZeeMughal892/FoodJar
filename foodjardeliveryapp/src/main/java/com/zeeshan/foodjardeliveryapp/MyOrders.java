@@ -2,6 +2,7 @@ package com.zeeshan.foodjardeliveryapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -19,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,8 +37,6 @@ import java.util.List;
 
 public class MyOrders extends AppCompatActivity {
 
-    public static String loginUserID;
-    public static String loginUserName;
 
     RecyclerView recyclerViewMyOrder;
     DatabaseReference databaseMyOrderRequests;
@@ -45,6 +47,8 @@ public class MyOrders extends AppCompatActivity {
     Toolbar toolbar;
     ActionBarDrawerToggle actionBarDrawerToggle;
     NavigationView navigationView;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,15 +56,6 @@ public class MyOrders extends AppCompatActivity {
         setContentView(R.layout.activity_my_orders);
         init();
         setUpToolbar();
-        final Intent intent = getIntent();
-
-        if (intent.hasExtra("userID") && intent.hasExtra("username")) {
-            loginUserID = getIntent().getStringExtra("userID");
-            loginUserName = getIntent().getStringExtra("username");
-        } else {
-            loginUserID = PreferenceUtils.getUserID(this);
-            loginUserName = PreferenceUtils.getUsername(this);
-        }
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -69,9 +64,6 @@ public class MyOrders extends AppCompatActivity {
                         startActivity(new Intent(MyOrders.this, MyOldOrders.class));
                         break;
                     case R.id.logout:
-                        PreferenceUtils.saveUsername(null, getApplicationContext());
-                        PreferenceUtils.savePassword(null, getApplicationContext());
-                        PreferenceUtils.saveUserID(null, getApplicationContext());
                         Intent intent1 = new Intent(MyOrders.this, MyOldOrders.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -94,10 +86,10 @@ public class MyOrders extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderRequestList.clear();
-                String status="Assigned";
+                String status = "ASSIGNED";
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
-                    if (MyOrders.loginUserID.equals(orderRequest.getAssignTo()) && status.equals(orderRequest.getOrderStatus())) {
+                    if (firebaseUser.getUid().equals(orderRequest.getAssignTo()) && status.equals(orderRequest.getOrderStatus())) {
                         orderRequestList.add(orderRequest);
                     }
                 }
@@ -114,7 +106,26 @@ public class MyOrders extends AppCompatActivity {
         });
 
     }
-
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MyOrders.this);
+        builder.setTitle(R.string.app_name);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setMessage("Do you want to close the FoodJar?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
     private void setUpToolbar() {
 
         setSupportActionBar(toolbar);
@@ -140,11 +151,12 @@ public class MyOrders extends AppCompatActivity {
     }
 
     private void init() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         recyclerViewMyOrder = findViewById(R.id.recyclerViewMyOrders);
         progressBar = findViewById(R.id.progressBarMyOrder);
         orderRequestList = new ArrayList<>();
-        databaseMyOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
-
+        databaseMyOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
         drawerLayout = findViewById(R.id.drawerLayout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.navigationView);

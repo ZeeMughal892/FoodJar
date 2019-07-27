@@ -1,4 +1,4 @@
-package com.zeeshan.foodjar.activities;
+package com.zeeshan.foodjar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -18,14 +18,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.widget.SearchView;
 
 import android.widget.Toast;
 
-import com.zeeshan.foodjar.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 import com.zeeshan.foodjar.adapters.ItemAdapter;
+import com.zeeshan.foodjar.entities.OffersModel;
 import com.zeeshan.foodjar.entities.Products;
 import com.zeeshan.foodjar.utils.PreferenceUtils;
 import com.google.android.material.navigation.NavigationView;
@@ -41,20 +45,20 @@ import java.util.List;
 public class SearchItem extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private DatabaseReference databaseProducts;
+    private DatabaseReference databaseProducts, databaseOffers;
     private ProgressBar progressBar;
     List<Products> productsList;
     SearchView ed_Search;
-
-    static public String loginUserID;
-    static public String loginUserName;
-
-
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    ImageView imageViewOfferBanner;
     DrawerLayout drawerLayout;
     Toolbar toolbar;
     ActionBarDrawerToggle actionBarDrawerToggle;
     NavigationView navigationView;
     ItemAdapter itemAdapter;
+    String stock = "0";
+    List<OffersModel> offersModelList;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -63,49 +67,36 @@ public class SearchItem extends AppCompatActivity {
 
         init();
         setUpToolbar();
-
-        final Intent intent = getIntent();
-        if (intent.hasExtra("userID") && intent.hasExtra("username")) {
-            loginUserID = getIntent().getStringExtra("userID");
-            loginUserName = getIntent().getStringExtra("username");
-        } else {
-            loginUserID = PreferenceUtils.getUserID(this);
-            loginUserName = PreferenceUtils.getUsername(this);
-        }
-
+        loadOfferBanner();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.home:
-                        Intent intent=new Intent(getApplicationContext(), SearchItem.class);
+                        Intent intent = new Intent(getApplicationContext(), SearchItem.class);
                         startActivity(intent);
-                        intent.putExtra("userID", loginUserID);
-                        intent.putExtra("username", loginUserName);
                         finish();
                         break;
                     case R.id.myOrders:
                         startActivity(new Intent(getApplicationContext(), OrderHistory.class));
                         break;
                     case R.id.logout:
-                        PreferenceUtils.saveUsername(null, getApplicationContext());
-                        PreferenceUtils.savePassword(null, getApplicationContext());
-                        PreferenceUtils.saveUserID(null, getApplicationContext());
-                        startActivity(new Intent(getApplicationContext(), LoginUser.class));
-                        finish();
+                        firebaseAuth.signOut();
+                        Intent intent1 = new Intent(SearchItem.this, LoginUser.class);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent1);
                         break;
                 }
                 return true;
             }
         });
-
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         loadItemList();
-
         ed_Search.setFocusable(true);
         ed_Search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -120,19 +111,44 @@ public class SearchItem extends AppCompatActivity {
             }
         });
     }
-
+    private void loadOfferBanner() {
+           databaseOffers.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    OffersModel offersModel = snapshot.getValue(OffersModel.class);
+                    if (offersModel != null) {
+                        offersModelList.add(offersModel);
+                    } else {
+                        imageViewOfferBanner.setVisibility(View.GONE);
+                    }
+                }
+                if (offersModelList != null) {
+                    Picasso.get()
+                            .load(offersModelList.get(offersModelList.size() - 1).getOfferImage())
+                            .placeholder(R.drawable.ic_noimage)
+                            .fit()
+                            .centerCrop()
+                            .into(imageViewOfferBanner);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(SearchItem.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void loadItemList() {
         databaseProducts.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 productsList.clear();
-
                 for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                     Products products = productSnapshot.getValue(Products.class);
-                    productsList.add(products);
+                    if (!stock.equals(products.getItemStock())) {
+                        productsList.add(products);
+                    }
                 }
-
                 itemAdapter = new ItemAdapter(productsList);
                 recyclerView.setAdapter(itemAdapter);
                 progressBar.setVisibility(View.INVISIBLE);
@@ -142,9 +158,9 @@ public class SearchItem extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(SearchItem.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.INVISIBLE);
-
             }
         });
+
     }
 
     private void setUpToolbar() {
@@ -182,7 +198,6 @@ public class SearchItem extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-
         if (id == R.id.btnCart) {
             startActivity(new Intent(SearchItem.this, ShoppingCart.class));
             return true;
@@ -213,14 +228,18 @@ public class SearchItem extends AppCompatActivity {
     }
 
     private void init() {
-        databaseProducts = FirebaseDatabase.getInstance().getReference("Products");
+        offersModelList = new ArrayList<>();
+        databaseProducts = FirebaseDatabase.getInstance().getReference("products");
+        databaseOffers = FirebaseDatabase.getInstance().getReference("offers");
         progressBar = findViewById(R.id.progressBar);
         recyclerView = findViewById(R.id.recyclerView);
         ed_Search = findViewById(R.id.ed_Search);
         productsList = new ArrayList<>();
-
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         drawerLayout = findViewById(R.id.drawerLayout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.navigationView);
+        imageViewOfferBanner = findViewById(R.id.imageViewOfferBanner);
     }
 }

@@ -6,6 +6,7 @@ public class Products {
     private String ItemName;
     private String ItemCategory;
     private String ItemStock;
+    private String ItemStockPerPack;
     private String ItemUnit;
     private String ItemPrice;
     private String ItemImage;
@@ -14,11 +15,12 @@ public class Products {
     public Products() {
     }
 
-    public Products(String itemId, String itemName, String itemCategory, String itemStock, String itemUnit, String itemPrice, String itemImage, String itemDescription) {
+    public Products(String itemId, String itemName, String itemCategory, String itemStock, String itemStockPerPack, String itemUnit, String itemPrice, String itemImage, String itemDescription) {
         ItemId = itemId;
         ItemName = itemName;
         ItemCategory = itemCategory;
         ItemStock = itemStock;
+        ItemStockPerPack = itemStockPerPack;
         ItemUnit = itemUnit;
         ItemPrice = itemPrice;
         ItemImage = itemImage;
@@ -55,6 +57,14 @@ public class Products {
 
     public void setItemStock(String itemStock) {
         ItemStock = itemStock;
+    }
+
+    public String getItemStockPerPack() {
+        return ItemStockPerPack;
+    }
+
+    public void setItemStockPerPack(String itemStockPerPack) {
+        ItemStockPerPack = itemStockPerPack;
     }
 
     public String getItemUnit() {

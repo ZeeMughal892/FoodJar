@@ -75,4 +75,25 @@
     <string name="total_items">Total Items :</string>
     <string name="_20">20</string>
     <string name="remember_me">Remember Me</string>
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="shop_name">Shop Name</string>
+    <string name="order_details">Order Details</string>
+    <string name="order_id">Order Id</string>
+    <string name="date">Date</string>
+    <string name="_155368541263">155368541263</string>
+    <string name="_26_7_2019">26/7/2019</string>
+    <string name="muhammad_zeeshan">Muhammad Zeeshan</string>
+    <string name="_92_301_3370834">+92-301-3370834</string>
+    <string name="order_status">Order Status</string>
+    <string name="adan_foods_pvt_ltd">Adan Foods Pvt Ltd.</string>
+    <string name="pending">Pending</string>
+    <string name="shop_126">Shop 126</string>
+    <string name="_">#</string>
+    <string name="qty">Qty</string>
+    <string name="amount">Amount</string>
+    <string name="total_order_amount">Total Order Amount =</string>
+    <string name="_5556826165">5556826165</string>
+    <string name="shop_125_alipur_plaza_basment_islambad">shop_125_alipur_plaza_basment_islambad</string>
+    <string name="shop_address">Shop Address</string>
 </resources>

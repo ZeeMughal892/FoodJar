@@ -1,4 +1,4 @@
-package com.zeeshan.foodjar.activities;
+package com.zeeshan.foodjar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,15 +10,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.zeeshan.foodjar.R;
-
 public class Splash extends AppCompatActivity {
 
     TextView txtTitle;
     ImageView imgLogo;
-    Intent intent;
-    SharedPreferences sharedPreferences;
-    Boolean isLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +27,7 @@ public class Splash extends AppCompatActivity {
         txtTitle.startAnimation(animation);
         imgLogo.startAnimation(animation);
 
-        intent = new Intent(this, LoginUser.class);
+       final Intent intent = new Intent(this, LoginUser.class);
         Thread timer = new Thread() {
             public void run() {
                 try {

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zeeshan.foodjaradmin.OrderDetails;
@@ -18,30 +19,23 @@ import java.util.List;
 public class OrderRequestAdapter extends RecyclerView.Adapter<OrderRequestAdapter.MyViewHolder> {
 
     private List<OrderRequest> orderRequestList;
+    ConstraintLayout cardViewOrderList;
+    String orderID;
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class MyViewHolder extends RecyclerView.ViewHolder  {
 
         TextView txtOrderID, txtOrderStatus, txtOrderItemCount, txtOrderTotalAmount;
-        String orderID;
-
 
         MyViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
 
             txtOrderID = itemView.findViewById(R.id.txtOrderID);
             txtOrderStatus = itemView.findViewById(R.id.txtOrderStatus);
             txtOrderItemCount = itemView.findViewById(R.id.txtOrderItemCount);
             txtOrderTotalAmount = itemView.findViewById(R.id.txtTotalAmountOrder);
-
+            cardViewOrderList = itemView.findViewById(R.id.cardViewOrderList);
         }
 
-        @Override
-        public void onClick(View view) {
-            Intent intent=new Intent(view.getContext(), OrderDetails.class);
-            OrderDetails.OrderID=orderID;
-            view.getContext().startActivity(intent);
-        }
     }
 
     public OrderRequestAdapter(List<OrderRequest> orderRequestList) {
@@ -51,8 +45,18 @@ public class OrderRequestAdapter extends RecyclerView.Adapter<OrderRequestAdapte
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_order, viewGroup, false);
-        return new MyViewHolder(itemView);
+        final View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_order, viewGroup, false);
+        final MyViewHolder myViewHolder = new MyViewHolder(itemView);
+        cardViewOrderList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orderID = orderRequestList.get(myViewHolder.getAdapterPosition()).getOrderID();
+                Intent intent=new Intent(itemView.getContext(),OrderDetails.class);
+                OrderDetails.OrderID=orderID;
+                itemView.getContext().startActivity(intent);
+            }
+        });
+        return myViewHolder;
     }
 
     @Override
@@ -64,7 +68,6 @@ public class OrderRequestAdapter extends RecyclerView.Adapter<OrderRequestAdapte
         holder.txtOrderItemCount.setText(orderRequest.getItemCount());
         holder.txtOrderTotalAmount.setText(orderRequest.getTotalAmount());
 
-        holder.orderID = orderRequest.getOrderID();
 
     }
 

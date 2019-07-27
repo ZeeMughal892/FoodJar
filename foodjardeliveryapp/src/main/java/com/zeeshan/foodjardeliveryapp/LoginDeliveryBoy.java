@@ -15,6 +15,12 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,12 +33,10 @@ public class LoginDeliveryBoy extends AppCompatActivity {
 
     Button btnLogin;
     DatabaseReference databaseDeliveryBoy;
-    EditText ed_Username, ed_Password;
+    EditText ed_Email, ed_Password;
     RadioButton rdoRemember;
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
-    Boolean isLogin;
-
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,68 +49,34 @@ public class LoginDeliveryBoy extends AppCompatActivity {
                 loginStaff();
             }
         });
-        sharedPreferences = getSharedPreferences("Login", MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-        isLogin = sharedPreferences.getBoolean("isLogin", true);
-        if (isLogin) {
-            ed_Username.setText(sharedPreferences.getString("username", null));
-            ed_Password.setText(sharedPreferences.getString("password", null));
-            sharedPreferences.getString("userID", null);
-        }
+
     }
 
     private void loginStaff() {
-        final String userName = ed_Username.getText().toString().trim();
+        final String email = ed_Email.getText().toString().trim();
         final String password = ed_Password.getText().toString().trim();
 
-        if (TextUtils.isEmpty(userName)) {
+        if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please Enter User Name", Toast.LENGTH_SHORT).show();
         } else if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
         } else {
-
-            databaseDeliveryBoy.addValueEventListener(new ValueEventListener() {
+            firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    for (DataSnapshot userData : dataSnapshot.getChildren()) {
-                        DeliveryBoy deliveryBoy = userData.getValue(DeliveryBoy.class);
-
-                        if (userName.equals(deliveryBoy.getBoyName()) && password.equals(deliveryBoy.getBoyPassword())) {
-                            Intent intent = new Intent(LoginDeliveryBoy.this, MyOrders.class);
-
-                            if (rdoRemember.isChecked()) {
-                                PreferenceUtils.saveUserID(deliveryBoy.getBoyID(), LoginDeliveryBoy.this);
-                                PreferenceUtils.saveUsername(userName, LoginDeliveryBoy.this);
-                                PreferenceUtils.savePassword(password, LoginDeliveryBoy.this);
-                                intent.putExtra("userID", deliveryBoy.getBoyID());
-                                intent.putExtra("username", deliveryBoy.getBoyName());
-                                MyOrders.loginUserName = deliveryBoy.getBoyName();
-                                MyOrders.loginUserID = deliveryBoy.getBoyID();
-                            }
-                            editor.putBoolean("isLogin", true);
-                            editor.putString("userID", deliveryBoy.getBoyID());
-                            editor.putString("username", userName);
-                            editor.putString("password", password);
-                            editor.apply();
-
-                            Toast.makeText(LoginDeliveryBoy.this, "Login Successful", Toast.LENGTH_SHORT).show();
-
-                            intent.putExtra("userID", deliveryBoy.getBoyID());
-                            intent.putExtra("username", deliveryBoy.getBoyName());
-
-                            MyOrders.loginUserName = deliveryBoy.getBoyName();
-                            MyOrders.loginUserID = deliveryBoy.getBoyID();
-
-                            startActivity(intent);
-                            finish();
-                        }
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if(task.isSuccessful()){
+                        Toast.makeText(LoginDeliveryBoy.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(LoginDeliveryBoy.this,MyOrders.class));
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(LoginDeliveryBoy.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
-
+            }).addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(LoginDeliveryBoy.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(LoginDeliveryBoy.this,""+ e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -114,13 +84,12 @@ public class LoginDeliveryBoy extends AppCompatActivity {
 
     private void init() {
         btnLogin = findViewById(R.id.btnLogin);
-        ed_Username = findViewById(R.id.ed_Username);
+        ed_Email = findViewById(R.id.ed_Email);
         ed_Password = findViewById(R.id.ed_Password);
         rdoRemember = findViewById(R.id.rdoRemember);
-        databaseDeliveryBoy = FirebaseDatabase.getInstance().getReference("Delivery Boys");
-        if (PreferenceUtils.getUserID(this) != null) {
-            startActivity(new Intent(LoginDeliveryBoy.this, MyOrders.class));
-        }
+        databaseDeliveryBoy = FirebaseDatabase.getInstance().getReference("deliveryBoys");
+       firebaseAuth=FirebaseAuth.getInstance();
+       firebaseUser=firebaseAuth.getCurrentUser();
     }
 
     @Override

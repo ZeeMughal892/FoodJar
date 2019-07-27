@@ -1,6 +1,7 @@
-package com.zeeshan.foodjar.activities;
+package com.zeeshan.foodjar;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -8,14 +9,16 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.zeeshan.foodjar.R;
-import com.zeeshan.foodjar.adapters.OrderAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.zeeshan.foodjar.adapters.OrderRequestAdapter;
 import com.zeeshan.foodjar.entities.OrderRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -34,6 +37,8 @@ public class OrderHistory extends AppCompatActivity {
     ProgressBar progressBar;
     List<OrderRequest> orderRequestList;
     Toolbar toolbar;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
 
 
     @Override
@@ -57,12 +62,12 @@ public class OrderHistory extends AppCompatActivity {
 
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
-                    if (SearchItem.loginUserID.equals(orderRequest.getUserID())) {
+                    if (firebaseUser.getUid().equals(orderRequest.getUserID())) {
                         orderRequestList.add(orderRequest);
                     }
                 }
-                OrderAdapter orderAdapter = new OrderAdapter(orderRequestList);
-                recyclerViewOrder.setAdapter(orderAdapter);
+                OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
+                recyclerViewOrder.setAdapter(orderRequestAdapter);
                 progressBar.setVisibility(View.INVISIBLE);
             }
 
@@ -74,7 +79,10 @@ public class OrderHistory extends AppCompatActivity {
         });
 
     }
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
@@ -94,7 +102,8 @@ public class OrderHistory extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarOrder);
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("OrderRequests");
-
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
     }
 }

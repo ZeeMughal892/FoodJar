@@ -34,7 +34,10 @@ public class AllUsers extends AppCompatActivity {
     Toolbar toolbar;
     SearchView ed_Search;
     UserAdapter userAdapter;
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +106,7 @@ public class AllUsers extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarUser);
         userList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseUsers = FirebaseDatabase.getInstance().getReference("Users");
+        databaseUsers = FirebaseDatabase.getInstance().getReference("users");
         ed_Search=findViewById(R.id.ed_Search);
 
     }
