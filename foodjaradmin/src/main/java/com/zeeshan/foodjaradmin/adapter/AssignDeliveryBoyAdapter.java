@@ -13,8 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zeeshan.foodjaradmin.OrderDetails;
-import com.zeeshan.foodjaradmin.PendingOrders;
+import com.zeeshan.foodjaradmin.AdminOrderDetails;
+import com.zeeshan.foodjaradmin.AdminPendingOrders;
 import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.entities.DeliveryBoy;
 import com.zeeshan.foodjaradmin.entities.Order;
@@ -64,25 +64,25 @@ public class AssignDeliveryBoyAdapter extends RecyclerView.Adapter<AssignDeliver
         cardViewBoys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String orderId = OrderDetails.OrderID;
+                final String orderId = AdminOrderDetails.OrderID;
                 databaseOrderRequests.child(orderId).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         currentOrder = dataSnapshot.getValue(OrderRequest.class);
                         int position = myViewHolder.getAdapterPosition();
+                        String vat = currentOrder.getTotalVAT();
                         String amount = currentOrder.getTotalAmount();
                         String userId = currentOrder.getUserID();
                         String status = "ASSIGNED";
                         String assignTo = deliveryBoyList.get(position).getBoyID();
                         String itemCount = currentOrder.getItemCount();
-                        List<Order> orders = new ArrayList<>();
                         String boyName = deliveryBoyList.get(position).getBoyName();
-                        orders = currentOrder.getOrderList();
-                        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders, amount, status, assignTo, itemCount);
+                        List<Order> orders = currentOrder.getOrderList();
+                        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders,vat, amount, status, assignTo, itemCount);
                         databaseOrderRequests.child(orderId).setValue(orderRequest);
                         Toast.makeText(itemView.getContext(), "Order Assign To : " + boyName, Toast.LENGTH_SHORT).show();
-                        itemView.getContext().startActivity(new Intent(itemView.getContext(), PendingOrders.class));
+                        itemView.getContext().startActivity(new Intent(itemView.getContext(), AdminPendingOrders.class));
 
                     }
                     @Override

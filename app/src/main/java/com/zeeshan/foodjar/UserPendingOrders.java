@@ -1,4 +1,4 @@
-package com.zeeshan.foodjaradmin;
+package com.zeeshan.foodjar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,32 +14,36 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.zeeshan.foodjaradmin.adapter.OrderRequestAdapter;
-import com.zeeshan.foodjaradmin.entities.OrderRequest;
+import com.zeeshan.foodjar.adapters.OrderRequestAdapter;
+import com.zeeshan.foodjar.entities.OrderRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssignedOrders extends AppCompatActivity {
+public class UserPendingOrders extends AppCompatActivity {
+
+
     RecyclerView recyclerViewOrder;
     DatabaseReference databaseOrderRequests;
     ProgressBar progressBar;
     List<OrderRequest> orderRequestList;
     Toolbar toolbar;
-    String status = "ASSIGNED";
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    String status = "PENDING";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assigned_orders);
+        setContentView(R.layout.activity_pending_orders);
+
         init();
         setUpToolbar();
         recyclerViewOrder.setHasFixedSize(true);
@@ -53,23 +57,29 @@ public class AssignedOrders extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderRequestList.clear();
+
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
-                    if (status.equals(orderRequest.getOrderStatus())) {
+                    if (firebaseUser.getUid().equals(orderRequest.getUserID()) && status.equals(orderRequest.getOrderStatus())) {
                         orderRequestList.add(orderRequest);
                     }
                 }
                 OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
                 recyclerViewOrder.setAdapter(orderRequestAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(AssignedOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(UserPendingOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
+
+    }
+
+    @Override
+    public void onBackPressed() {
 
     }
 
@@ -80,7 +90,11 @@ public class AssignedOrders extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AssignedOrders.this, SearchItem.class));
+                Intent intent=new Intent(UserPendingOrders.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -91,6 +105,7 @@ public class AssignedOrders extends AppCompatActivity {
         orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
         databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
-
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
     }
 }

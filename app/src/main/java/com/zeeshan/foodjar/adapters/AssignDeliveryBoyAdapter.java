@@ -18,8 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.zeeshan.foodjar.OrderDetails;
-import com.zeeshan.foodjar.OrderHistory;
+import com.zeeshan.foodjar.UserOrderDetails;
+import com.zeeshan.foodjar.UserDeliveredOrders;
 import com.zeeshan.foodjar.R;
 import com.zeeshan.foodjar.entities.DeliveryBoy;
 import com.zeeshan.foodjar.entities.Order;
@@ -64,25 +64,25 @@ public class AssignDeliveryBoyAdapter extends RecyclerView.Adapter<AssignDeliver
         cardViewBoys.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String orderId = OrderDetails.OrderID;
+                final String orderId = UserOrderDetails.OrderID;
                 databaseOrderRequests.child(orderId).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                         currentOrder = dataSnapshot.getValue(OrderRequest.class);
                         int position = myViewHolder.getAdapterPosition();
+                        String vat = currentOrder.getTotalVAT();
                         String amount = currentOrder.getTotalAmount();
                         String userId = currentOrder.getUserID();
                         String status = "ASSIGNED";
                         String assignTo = deliveryBoyList.get(position).getBoyID();
                         String itemCount = currentOrder.getItemCount();
-                        List<Order> orders = new ArrayList<>();
                         String boyName = deliveryBoyList.get(position).getBoyName();
-                        orders = currentOrder.getOrderList();
-                        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders, amount, status, assignTo, itemCount);
+                        List<Order> orders = currentOrder.getOrderList();
+                        OrderRequest orderRequest = new OrderRequest(orderId, userId, orders,vat, amount, status, assignTo, itemCount);
                         databaseOrderRequests.child(orderId).setValue(orderRequest);
                         Toast.makeText(itemView.getContext(), "Order Assign To : " + boyName, Toast.LENGTH_SHORT).show();
-                        itemView.getContext().startActivity(new Intent(itemView.getContext(), OrderHistory.class));
+                        itemView.getContext().startActivity(new Intent(itemView.getContext(), UserDeliveredOrders.class));
 
                     }
                     @Override

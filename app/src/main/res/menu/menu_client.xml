@@ -7,8 +7,16 @@
             android:title="@string/home"
             android:icon="@drawable/ic_home_black_24dp"/>
         <item
-            android:id="@+id/myOrders"
-            android:title="@string/my_orders"
+            android:id="@+id/pendingOrders"
+            android:title="@string/pending_orders"
+            android:icon="@drawable/ic_history_black_24dp"/>
+        <item
+            android:id="@+id/assignedToDeliver"
+            android:title="@string/assigned_to_deliver"
+            android:icon="@drawable/ic_history_black_24dp"/>
+        <item
+            android:id="@+id/deliveredOrders"
+            android:title="@string/de"
             android:icon="@drawable/ic_history_black_24dp"/>
         <item
             android:id="@+id/logout"

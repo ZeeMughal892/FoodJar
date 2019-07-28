@@ -8,7 +8,9 @@
     <color name="colorGray">#BDBDBD</color>
 
     <color name="colorPrimaryDark">#2C0548</color>
-    <color name="colorPrimary">#55376D</color>
+    <color name="colorPrimary">#55376D</color>f44336
     <color name="colorPrimaryLight">#7F6990</color>
+
+    <color name="colorRed">#f44336</color>
 
 </resources>

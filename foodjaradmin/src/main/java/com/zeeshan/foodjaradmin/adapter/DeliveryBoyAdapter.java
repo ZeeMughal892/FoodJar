@@ -1,5 +1,6 @@
 package com.zeeshan.foodjaradmin.adapter;
 
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +9,18 @@ import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.zeeshan.foodjaradmin.R;
+import com.zeeshan.foodjaradmin.SearchItem;
 import com.zeeshan.foodjaradmin.entities.DeliveryBoy;
 
 import java.util.ArrayList;
@@ -22,16 +32,17 @@ public class DeliveryBoyAdapter extends RecyclerView.Adapter<DeliveryBoyAdapter.
     private List<DeliveryBoy> deliveryBoyListFull;
 
 
+
+
     class MyViewHolder extends RecyclerView.ViewHolder {
-
         TextView txtBoyName, txtBoyPhone;
-
 
         MyViewHolder(View itemView) {
             super(itemView);
 
             txtBoyName = itemView.findViewById(R.id.txtBoyName);
             txtBoyPhone = itemView.findViewById(R.id.txtBoyPhone);
+
         }
     }
 
@@ -43,8 +54,13 @@ public class DeliveryBoyAdapter extends RecyclerView.Adapter<DeliveryBoyAdapter.
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_delivery_boy, viewGroup, false);
-        return new MyViewHolder(itemView);
+        final View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.row_delivery_boy, viewGroup, false);
+
+        MyViewHolder myViewHolder = new MyViewHolder(itemView);
+
+
+
+        return myViewHolder;
     }
 
     @Override

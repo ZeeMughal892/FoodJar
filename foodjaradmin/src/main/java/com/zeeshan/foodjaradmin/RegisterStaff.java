@@ -89,10 +89,7 @@ public class RegisterStaff extends AppCompatActivity {
             });
         }
     }
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
+  
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_white_24dp);
         toolbar.setTitle("");
@@ -100,7 +97,10 @@ public class RegisterStaff extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(RegisterStaff.this, SearchItem.class));
+                Intent intent=new Intent(RegisterStaff.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                finish();
             }
         });
     }

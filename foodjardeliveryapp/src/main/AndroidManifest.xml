@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.zeeshan.foodjardeliveryapp">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
-        android:name=".utils.Home"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,9 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MyOldOrders"/>
-        <activity android:name=".OrderDetails" />
-        <activity android:name=".MyOrders" />
+        <activity android:name=".DeliveryAppDeliveredOrders"/>
+        <activity android:name=".DeliveryAppOrderDetails" />
+        <activity android:name=".DeliveryAppPendingOrders" />
         <activity android:name=".LoginDeliveryBoy" />
         <activity android:name=".Splash">
             <intent-filter>

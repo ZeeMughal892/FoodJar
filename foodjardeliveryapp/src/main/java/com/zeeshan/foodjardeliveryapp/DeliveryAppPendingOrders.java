@@ -20,6 +20,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,16 +33,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.zeeshan.foodjardeliveryapp.adapter.OrderRequestAdapter;
 import com.zeeshan.foodjardeliveryapp.entities.OrderRequest;
-import com.zeeshan.foodjardeliveryapp.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MyOrders extends AppCompatActivity {
+public class DeliveryAppPendingOrders extends AppCompatActivity {
 
 
     RecyclerView recyclerViewMyOrder;
-    DatabaseReference databaseMyOrderRequests;
+    DatabaseReference databaseOrderRequests, databaseDeliveryBoys;
     ProgressBar progressBar;
     List<OrderRequest> orderRequestList;
 
@@ -49,22 +51,79 @@ public class MyOrders extends AppCompatActivity {
     NavigationView navigationView;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+    String status = "ASSIGNED";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_orders);
+        setContentView(R.layout.activity_pending_orders);
         init();
+        final String userID=firebaseUser.getUid();
         setUpToolbar();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.recentOrders:
-                        startActivity(new Intent(MyOrders.this, MyOldOrders.class));
+                    case R.id.pendingOrders:
+                        startActivity(new Intent(getApplicationContext(), DeliveryAppPendingOrders.class));
+                        finish();
+                        break;
+                    case R.id.deliveredOrders:
+                        startActivity(new Intent(getApplicationContext(), DeliveryAppDeliveredOrders.class));
+                        finish();
+                        break;
+                    case R.id.deleteAccount:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(DeliveryAppPendingOrders.this);
+                        builder.setTitle(R.string.app_name);
+                        builder.setIcon(R.mipmap.ic_launcher);
+                        builder.setMessage("Are you sure you want to delete your account? This action will never be reverted.")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+
+                                        databaseDeliveryBoys.child(
+                                                userID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(DeliveryAppPendingOrders.this, "Account Deleted Successfully", Toast.LENGTH_SHORT).show();
+
+                                                } else {
+                                                    Toast.makeText(DeliveryAppPendingOrders.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                                        firebaseUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Intent intent = new Intent(getApplicationContext(), LoginDeliveryBoy.class);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    startActivity(intent);
+                                                    finish();
+                                                    System.exit(0);
+                                                } else {
+                                                    Toast.makeText(DeliveryAppPendingOrders.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog alert = builder.create();
+                        alert.show();
                         break;
                     case R.id.logout:
-                        Intent intent1 = new Intent(MyOrders.this, MyOldOrders.class);
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent1 = new Intent(getApplicationContext(), LoginDeliveryBoy.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent1);
@@ -82,11 +141,11 @@ public class MyOrders extends AppCompatActivity {
         recyclerViewMyOrder.setLayoutManager(mLayoutManager);
         recyclerViewMyOrder.setItemAnimator(new DefaultItemAnimator());
 
-        databaseMyOrderRequests.addValueEventListener(new ValueEventListener() {
+        databaseOrderRequests.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderRequestList.clear();
-                String status = "ASSIGNED";
+
                 for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
                     OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
                     if (firebaseUser.getUid().equals(orderRequest.getAssignTo()) && status.equals(orderRequest.getOrderStatus())) {
@@ -95,20 +154,21 @@ public class MyOrders extends AppCompatActivity {
                 }
                 OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
                 recyclerViewMyOrder.setAdapter(orderRequestAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MyOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(DeliveryAppPendingOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
 
     }
+
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MyOrders.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(DeliveryAppPendingOrders.this);
         builder.setTitle(R.string.app_name);
         builder.setIcon(R.mipmap.ic_launcher);
         builder.setMessage("Do you want to close the FoodJar?")
@@ -116,6 +176,7 @@ public class MyOrders extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -126,8 +187,8 @@ public class MyOrders extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
-    private void setUpToolbar() {
 
+    private void setUpToolbar() {
         setSupportActionBar(toolbar);
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
@@ -156,7 +217,8 @@ public class MyOrders extends AppCompatActivity {
         recyclerViewMyOrder = findViewById(R.id.recyclerViewMyOrders);
         progressBar = findViewById(R.id.progressBarMyOrder);
         orderRequestList = new ArrayList<>();
-        databaseMyOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        databaseDeliveryBoys = FirebaseDatabase.getInstance().getReference("deliveryBoys");
         drawerLayout = findViewById(R.id.drawerLayout);
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.navigationView);

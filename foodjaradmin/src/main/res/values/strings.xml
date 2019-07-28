@@ -89,8 +89,8 @@
     <string name="stock_">Stock</string>
     <string name="update">Update</string>
     <string name="order_details">Order Details</string>
-    <string name="order_id">ORDER ID</string>
-    <string name="date">DATE</string>
+    <string name="order_id">Order Id</string>
+    <string name="date">Date</string>
     <string name="_1523654789631">1523654789631</string>
     <string name="_26_7_2019">26/7/2019</string>
     <string name="order_status">Order Status</string>
@@ -123,16 +123,28 @@
     <string name="upload_offer_banner">Upload Offer Banner</string>
     <string name="_0_items_left">0 Items Left</string>
     <string name="abc_example_com">abc@example.com</string>
+    <string name="_5_vat">5% VAT =</string>
+    <string name="or">OR</string>
 
     <string-array name="Unit">
         <item>KG</item>
+        <item>COTTON</item>
+        <item>PIECE</item>
+        <item>GRAM</item>
+        <item>ML</item>
+        <item>BAG</item>
+        <item>PACK</item>
+        <item>BUNDLE</item>
         <item>DOZEN</item>
         <item>ITEMS</item>
+        <item>GALLON</item>
         <item>KG</item>
     </string-array>
+
     <string-array name="Categories">
         <item>Fruit</item>
         <item>Vegetable</item>
+        <item>Drink</item>
         <item>Drink</item>
         <item>Juice</item>
         <item>Milk</item>
@@ -142,5 +154,18 @@
         <item>Biscuit</item>
         <item>Bubble</item>
         <item>Chocolate</item>
+        <item>Cooking Oil</item>
+        <item>Banaspati Ghee</item>
+        <item>Crackers</item>
+        <item>Chips</item>
+        <item>Sauces</item>
+        <item>Rice</item>
+        <item>Powder</item>
+        <item>Fish</item>
+        <item>Tuna</item>
+        <item>Sardine</item>
+        <item>Chicken</item>
+        <item>Beef</item>
+        <item>Mutton</item>
     </string-array>
 </resources>

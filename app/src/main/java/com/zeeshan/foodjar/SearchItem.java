@@ -19,10 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import androidx.appcompat.widget.SearchView;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,16 +33,18 @@ import com.squareup.picasso.Picasso;
 import com.zeeshan.foodjar.adapters.ItemAdapter;
 import com.zeeshan.foodjar.entities.OffersModel;
 import com.zeeshan.foodjar.entities.Products;
-import com.zeeshan.foodjar.utils.PreferenceUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.zeeshan.foodjar.utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SearchItem extends AppCompatActivity {
 
@@ -59,6 +63,9 @@ public class SearchItem extends AppCompatActivity {
     ItemAdapter itemAdapter;
     String stock = "0";
     List<OffersModel> offersModelList;
+    LinearLayout offerContainer;
+    TextView txtOffer;
+    public static final String URL_REGEX = "^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -77,15 +84,24 @@ public class SearchItem extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                         break;
-                    case R.id.myOrders:
-                        startActivity(new Intent(getApplicationContext(), OrderHistory.class));
+                    case R.id.pendingOrders:
+                        startActivity(new Intent(getApplicationContext(), UserPendingOrders.class));
+                        break;
+                    case R.id.assignedToDeliver:
+                        startActivity(new Intent(getApplicationContext(), UserAssignedOrders.class));
+                        break;
+                    case R.id.deliveredOrders:
+                        startActivity(new Intent(getApplicationContext(), UserDeliveredOrders.class));
                         break;
                     case R.id.logout:
-                        firebaseAuth.signOut();
+                        FirebaseAuth.getInstance().signOut();
+                        PreferenceUtils.saveEmail("", getApplicationContext());
+                        PreferenceUtils.savePassword("", getApplicationContext());
                         Intent intent1 = new Intent(SearchItem.this, LoginUser.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent1);
+                        finish();
                         break;
                 }
                 return true;
@@ -111,8 +127,9 @@ public class SearchItem extends AppCompatActivity {
             }
         });
     }
+
     private void loadOfferBanner() {
-           databaseOffers.addValueEventListener(new ValueEventListener() {
+        databaseOffers.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -123,21 +140,34 @@ public class SearchItem extends AppCompatActivity {
                         imageViewOfferBanner.setVisibility(View.GONE);
                     }
                 }
-                if (offersModelList != null) {
-                    Picasso.get()
-                            .load(offersModelList.get(offersModelList.size() - 1).getOfferImage())
-                            .placeholder(R.drawable.ic_noimage)
-                            .fit()
-                            .centerCrop()
-                            .into(imageViewOfferBanner);
+                if (offersModelList != null && offersModelList.size() > 0) {
+                    offerContainer.setVisibility(View.VISIBLE);
+                    Pattern p = Pattern.compile(URL_REGEX);
+                    Matcher m = p.matcher(offersModelList.get(offersModelList.size() - 1).getOffer());//replace with string to compare
+                    if (m.find()) {
+                        imageViewOfferBanner.setVisibility(View.VISIBLE);
+                        txtOffer.setVisibility(View.GONE);
+                        Picasso.get()
+                                .load(offersModelList.get(offersModelList.size() - 1).getOffer())
+                                .placeholder(R.drawable.ic_noimage)
+                                .fit()
+                                .centerCrop()
+                                .into(imageViewOfferBanner);
+                    } else {
+                        imageViewOfferBanner.setVisibility(View.GONE);
+                        txtOffer.setVisibility(View.VISIBLE);
+                        txtOffer.setText(offersModelList.get(offersModelList.size() - 1).getOffer());
+                    }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(SearchItem.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
     private void loadItemList() {
         databaseProducts.addValueEventListener(new ValueEventListener() {
             @Override
@@ -151,16 +181,15 @@ public class SearchItem extends AppCompatActivity {
                 }
                 itemAdapter = new ItemAdapter(productsList);
                 recyclerView.setAdapter(itemAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(SearchItem.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
         });
-
     }
 
     private void setUpToolbar() {
@@ -200,6 +229,7 @@ public class SearchItem extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnCart) {
             startActivity(new Intent(SearchItem.this, ShoppingCart.class));
+            finish();
             return true;
         }
 
@@ -216,6 +246,7 @@ public class SearchItem extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -241,5 +272,7 @@ public class SearchItem extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         navigationView = findViewById(R.id.navigationView);
         imageViewOfferBanner = findViewById(R.id.imageViewOfferBanner);
+        txtOffer = findViewById(R.id.txtOffer);
+        offerContainer = findViewById(R.id.offerContainer);
     }
 }

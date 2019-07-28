@@ -18,7 +18,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
 
     class MyViewHolder extends RecyclerView.ViewHolder  {
 
-        TextView txtItemNo,txtItemName,txtItemQty,txtItemUnit,txtItemAmount;
+        TextView txtItemNo,txtItemName,txtItemQty,txtItemUnit,txtItemPrice,txtItemAmount;
 
 
         MyViewHolder(View itemView) {
@@ -27,6 +27,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
             txtItemName=itemView.findViewById(R.id.txtItemName);
             txtItemQty=itemView.findViewById(R.id.txtItemQty);
             txtItemUnit=itemView.findViewById(R.id.txtItemUnit);
+            txtItemPrice=itemView.findViewById(R.id.txtItemPrice);
             txtItemAmount=itemView.findViewById(R.id.txtItemAmount);
         }
 
@@ -51,7 +52,9 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.MyViewHolder
         holder.txtItemName.setText(order.getItemName());
         holder.txtItemQty.setText(order.getItemQuantity());
         holder.txtItemUnit.setText(order.getItemUnit());
-        holder.txtItemAmount.setText(order.getItemPrice());
+        holder.txtItemPrice.setText(order.getItemPrice());
+        String Amount= String.valueOf(Integer.parseInt(order.getItemQuantity()) * Integer.parseInt(order.getItemPrice()));
+        holder.txtItemAmount.setText(Amount);
 
     }
 

@@ -1,15 +1,18 @@
 package com.zeeshan.foodjaradmin.entities;
 
+import com.zeeshan.foodjaradmin.Offers;
+
 public class OffersModel {
     String offerId;
-    String offerTitle;
-    String offerImage;
+    String offer;
     String lastUpdatedBy;
 
-    public OffersModel(String offerId, String offerTitle, String offerImage, String lastUpdatedBy) {
+    public OffersModel() {
+    }
+
+    public OffersModel(String offerId, String offer, String lastUpdatedBy) {
         this.offerId = offerId;
-        this.offerTitle = offerTitle;
-        this.offerImage = offerImage;
+        this.offer = offer;
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
@@ -21,20 +24,12 @@ public class OffersModel {
         this.offerId = offerId;
     }
 
-    public String getOfferTitle() {
-        return offerTitle;
+    public String getOffer() {
+        return offer;
     }
 
-    public void setOfferTitle(String offerTitle) {
-        this.offerTitle = offerTitle;
-    }
-
-    public String getOfferImage() {
-        return offerImage;
-    }
-
-    public void setOfferImage(String offerImage) {
-        this.offerImage = offerImage;
+    public void setOffer(String offer) {
+        this.offer = offer;
     }
 
     public String getLastUpdatedBy() {

@@ -187,7 +187,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         Items items = itemsList.get(position);
-        String Price = "Rs. " + items.getItemPrice();
+        String Price = "SAR " + items.getItemPrice();
         String Stock = " " + items.getItemStock() + " " + items.getItemUnit() + " Left";
         holder.itemName.setText(items.getItemName());
         holder.itemCategory.setText(items.getItemCategory());

@@ -1,10 +1,10 @@
-package com.zeeshan.foodjaradmin;
+package com.zeeshan.foodjar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,9 +14,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.zeeshan.foodjaradmin.R;
-import com.zeeshan.foodjaradmin.adapter.UserAdapter;
-import com.zeeshan.foodjaradmin.entities.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.zeeshan.foodjar.adapters.OrderRequestAdapter;
+import com.zeeshan.foodjar.entities.OrderRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,88 +27,85 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllUsers extends AppCompatActivity {
-    RecyclerView recyclerViewOrder;
-    DatabaseReference databaseUsers;
-    ProgressBar progressBar;
-    List<User> userList;
-    Toolbar toolbar;
-    SearchView ed_Search;
-    UserAdapter userAdapter;
-    @Override
-    public void onBackPressed() {
+public class UserDeliveredOrders extends AppCompatActivity {
 
-    }
+
+    RecyclerView recyclerViewOrder;
+    DatabaseReference databaseOrderRequests;
+    ProgressBar progressBar;
+    List<OrderRequest> orderRequestList;
+    Toolbar toolbar;
+    FirebaseAuth firebaseAuth;
+    FirebaseUser firebaseUser;
+    String status="DELIVERED";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_all_users);
+        setContentView(R.layout.activity_delivered_orders);
+
         init();
         setUpToolbar();
         recyclerViewOrder.setHasFixedSize(true);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerViewOrder.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
         recyclerViewOrder.setLayoutManager(mLayoutManager);
         recyclerViewOrder.setItemAnimator(new DefaultItemAnimator());
 
-        databaseUsers.addValueEventListener(new ValueEventListener() {
+        databaseOrderRequests.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                for (DataSnapshot userDataSnapshot : dataSnapshot.getChildren()) {
-                    User user = userDataSnapshot.getValue(User.class);
-                    userList.add(user);
+                orderRequestList.clear();
+
+                for (DataSnapshot orderDataSnapshot : dataSnapshot.getChildren()) {
+                    OrderRequest orderRequest = orderDataSnapshot.getValue(OrderRequest.class);
+                    if (firebaseUser.getUid().equals(orderRequest.getUserID())&&status.equals(orderRequest.getOrderStatus())) {
+                        orderRequestList.add(orderRequest);
+                    }
                 }
-                userAdapter = new UserAdapter(userList);
-                recyclerViewOrder.setAdapter(userAdapter);
+                OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
+                recyclerViewOrder.setAdapter(orderRequestAdapter);
                 progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(AllUsers.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserDeliveredOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
             }
         });
-        ed_Search.setFocusable(true);
-        ed_Search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String s) {
-                userAdapter.getFilter().filter(s);
-                return false;
-            }
-        });
     }
+    @Override
+    public void onBackPressed() {
 
+    }
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
+
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(AllUsers.this,SearchItem.class);
+                Intent intent=new Intent(UserDeliveredOrders.this,SearchItem.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 finish();
-
             }
         });
     }
 
     private void init() {
-        recyclerViewOrder = findViewById(R.id.recyclerViewUsers);
-        progressBar = findViewById(R.id.progressBarUser);
-        userList = new ArrayList<>();
+        recyclerViewOrder = findViewById(R.id.recyclerViewOrders);
+        progressBar = findViewById(R.id.progressBarOrder);
+        orderRequestList = new ArrayList<>();
         toolbar = findViewById(R.id.toolbar);
-        databaseUsers = FirebaseDatabase.getInstance().getReference("users");
-        ed_Search=findViewById(R.id.ed_Search);
-
+        databaseOrderRequests = FirebaseDatabase.getInstance().getReference("orderRequests");
+        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseUser=firebaseAuth.getCurrentUser();
     }
 }

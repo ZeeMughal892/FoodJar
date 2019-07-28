@@ -10,10 +10,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.zeeshan.foodjar.utils.Home;
+
 public class Splash extends AppCompatActivity {
 
     TextView txtTitle;
     ImageView imgLogo;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,15 @@ public class Splash extends AppCompatActivity {
         txtTitle.startAnimation(animation);
         imgLogo.startAnimation(animation);
 
-       final Intent intent = new Intent(this, LoginUser.class);
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        if (firebaseUser != null) {
+            intent = new Intent(Splash.this, SearchItem.class);
+        } else {
+            intent = new Intent(this, LoginUser.class);
+        }
         Thread timer = new Thread() {
             public void run() {
                 try {

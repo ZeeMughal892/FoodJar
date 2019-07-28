@@ -9,6 +9,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjaradmin.R;
 
 public class Splash extends AppCompatActivity {
@@ -29,7 +31,15 @@ public class Splash extends AppCompatActivity {
         txtTitle.startAnimation(animation);
         imgLogo.startAnimation(animation);
 
-        intent = new Intent(this, LoginAdmin.class);
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+
+        if (firebaseUser != null) {
+            intent = new Intent(Splash.this, SearchItem.class);
+        } else {
+            intent = new Intent(this, LoginAdmin.class);
+        }
         Thread timer = new Thread() {
             public void run() {
                 try {

@@ -26,7 +26,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.zeeshan.foodjaradmin.adapter.ItemAdapter;
 import com.zeeshan.foodjaradmin.entities.Items;
-import com.zeeshan.foodjaradmin.utils.PreferenceUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -69,27 +68,34 @@ public class SearchItem extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.pendingOrders:
-                        startActivity(new Intent(getApplicationContext(), PendingOrders.class));
+                        startActivity(new Intent(getApplicationContext(), AdminPendingOrders.class));
+                        finish();
                         break;
                     case R.id.deliveredOrders:
-                        startActivity(new Intent(getApplicationContext(), DeliveredOrders.class));
+                        startActivity(new Intent(getApplicationContext(), AdminDeliveredOrders.class));
                         break;
                     case R.id.assignedOrders:
-                        startActivity(new Intent(getApplicationContext(), AssignedOrders.class));
+                        startActivity(new Intent(getApplicationContext(), AdminAssignedOrders.class));
+                        finish();
                         break;
                     case R.id.offers:
                         startActivity(new Intent(getApplicationContext(), Offers.class));
+                        finish();
                         break;
                     case R.id.users:
                         startActivity(new Intent(getApplicationContext(), AllUsers.class));
+                        finish();
                         break;
                     case R.id.deliveryBoys:
                         startActivity(new Intent(getApplicationContext(), AllDeliveryBoys.class));
+                        finish();
                         break;
                     case R.id.addNewDeliveryBoy:
                         startActivity(new Intent(getApplicationContext(), RegisterDeliveryBoy.class));
+                        finish();
                         break;
                     case R.id.logout:
+                        FirebaseAuth.getInstance().signOut();
                         Intent intent1 = new Intent(SearchItem.this, LoginAdmin.class);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -134,13 +140,13 @@ public class SearchItem extends AppCompatActivity {
                 }
                 itemAdapter = new ItemAdapter(itemsList);
                 recyclerView.setAdapter(itemAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(SearchItem.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
 
             }
         });
@@ -181,6 +187,7 @@ public class SearchItem extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnAdd) {
             startActivity(new Intent(SearchItem.this, AddNewItem.class));
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);

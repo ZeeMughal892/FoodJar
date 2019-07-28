@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.zeeshan.foodjaradmin.OrderDetails;
+import com.zeeshan.foodjaradmin.AdminOrderDetails;
 import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.entities.OrderRequest;
 
@@ -51,8 +51,8 @@ public class OrderRequestAdapter extends RecyclerView.Adapter<OrderRequestAdapte
             @Override
             public void onClick(View view) {
                 orderID = orderRequestList.get(myViewHolder.getAdapterPosition()).getOrderID();
-                Intent intent=new Intent(itemView.getContext(),OrderDetails.class);
-                OrderDetails.OrderID=orderID;
+                Intent intent=new Intent(itemView.getContext(), AdminOrderDetails.class);
+                AdminOrderDetails.OrderID=orderID;
                 itemView.getContext().startActivity(intent);
             }
         });
@@ -63,10 +63,11 @@ public class OrderRequestAdapter extends RecyclerView.Adapter<OrderRequestAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         OrderRequest orderRequest = orderRequestList.get(position);
+        String amount=" SAR " +orderRequest.getTotalAmount();
         holder.txtOrderID.setText(orderRequest.getOrderID());
         holder.txtOrderStatus.setText(orderRequest.getOrderStatus());
         holder.txtOrderItemCount.setText(orderRequest.getItemCount());
-        holder.txtOrderTotalAmount.setText(orderRequest.getTotalAmount());
+        holder.txtOrderTotalAmount.setText(amount);
 
 
     }

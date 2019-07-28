@@ -25,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PendingOrders extends AppCompatActivity {
+public class AdminPendingOrders extends AppCompatActivity {
     RecyclerView recyclerViewOrder;
     DatabaseReference databaseOrderRequests;
     ProgressBar progressBar;
@@ -59,20 +59,20 @@ public class PendingOrders extends AppCompatActivity {
                 }
                 OrderRequestAdapter orderRequestAdapter = new OrderRequestAdapter(orderRequestList);
                 recyclerViewOrder.setAdapter(orderRequestAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(PendingOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(AdminPendingOrders.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
             }
         });
 
     }
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
@@ -82,7 +82,11 @@ public class PendingOrders extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(PendingOrders.this, SearchItem.class));
+                Intent intent=new Intent(AdminPendingOrders.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
 
             }
         });

@@ -43,6 +43,7 @@ public class LoginAdmin extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     ProgressBar progressBarLoginAdmin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,14 +72,19 @@ public class LoginAdmin extends AppCompatActivity {
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                  startActivity(new Intent(LoginAdmin.this,SearchItem.class));
-                  finish();
+                    if (task.isSuccessful()) {
+                        startActivity(new Intent(LoginAdmin.this, SearchItem.class));
+                        finish();
+                    }
+                    else{
+                        Toast.makeText(LoginAdmin.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(LoginAdmin.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    progressBarLoginAdmin.setVisibility(View.INVISIBLE);
+                    progressBarLoginAdmin.setVisibility(View.GONE);
                 }
             });
         }
@@ -95,6 +101,7 @@ public class LoginAdmin extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -108,7 +115,7 @@ public class LoginAdmin extends AppCompatActivity {
 
 
     private void init() {
-        progressBarLoginAdmin=findViewById(R.id.progressBarLoginAdmin);
+        progressBarLoginAdmin = findViewById(R.id.progressBarLoginAdmin);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         btnLogin = findViewById(R.id.btnLogin);

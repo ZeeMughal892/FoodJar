@@ -53,7 +53,7 @@ public class AddNewItem extends AppCompatActivity {
         setContentView(R.layout.activity_add_new_item);
         init();
         setUpToolbar();
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.GONE);
         btnSelectImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -73,6 +73,7 @@ public class AddNewItem extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnSave) {
             addItem();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -118,7 +119,7 @@ public class AddNewItem extends AppCompatActivity {
                             databaseProducts.child(itemId).setValue(items);
                             clearFields();
                             Toast.makeText(AddNewItem.this, "Item Added Successfully", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.INVISIBLE);
+                            progressBar.setVisibility(View.GONE);
 
                         }
                     });
@@ -127,7 +128,7 @@ public class AddNewItem extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(AddNewItem.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    progressBar.setVisibility(View.INVISIBLE);
+                    progressBar.setVisibility(View.GONE);
 
                 }
             });
@@ -136,7 +137,7 @@ public class AddNewItem extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
 
     private String getFileExtension(Uri uri) {
@@ -162,8 +163,11 @@ public class AddNewItem extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AddNewItem.this, SearchItem.class));
-
+                Intent intent=new Intent(AddNewItem.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+               startActivity(intent);
+                finish();
             }
         });
     }

@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.zeeshan.foodjaradmin.R;
 import com.zeeshan.foodjaradmin.adapter.AssignDeliveryBoyAdapter;
 import com.zeeshan.foodjaradmin.adapter.OrderAdapter;
 import com.zeeshan.foodjaradmin.entities.DeliveryBoy;
@@ -37,9 +36,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class OrderDetails extends AppCompatActivity {
+public class AdminOrderDetails extends AppCompatActivity {
 
-    TextView txtOrderId, txtUsername, txtPhoneNumber, txtShopName, txtShopAddress, txtTotalAmount, txtDate, txtOrderStatus;
+    TextView txtOrderId, txtUsername, txtPhoneNumber, txtShopName, txtShopAddress, txtTotalAmount, txtDate, txtOrderStatus, txtReferredBy, txtTotalVAT;
     Button btnAssign;
     RecyclerView recyclerViewOrderItems, recyclerViewBoys;
     List<OrderRequest> orderRequestList;
@@ -55,6 +54,7 @@ public class OrderDetails extends AppCompatActivity {
     AssignDeliveryBoyAdapter deliveryBoyAdapter;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,8 +62,7 @@ public class OrderDetails extends AppCompatActivity {
         init();
         setUpToolbar();
         loadOrder();
-
-        dialogDeliveryBoys = new Dialog(OrderDetails.this);
+        dialogDeliveryBoys = new Dialog(AdminOrderDetails.this);
         dialogDeliveryBoys.setContentView(R.layout.dialog_delivery_boy_list);
         dialogDeliveryBoys.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
@@ -82,7 +81,6 @@ public class OrderDetails extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     DeliveryBoy deliveryBoy = snapshot.getValue(DeliveryBoy.class);
                     deliveryBoyList.add(deliveryBoy);
-
                 }
                 recyclerViewBoys = dialogDeliveryBoys.findViewById(R.id.recyclerViewSelectBoy);
                 RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -93,7 +91,7 @@ public class OrderDetails extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminOrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -105,9 +103,10 @@ public class OrderDetails extends AppCompatActivity {
         });
 
     }
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
 
     private void loadOrder() {
@@ -119,14 +118,21 @@ public class OrderDetails extends AppCompatActivity {
                 calendar.setTimeInMillis(Long.parseLong(currentOrder.getOrderID()));
 
                 int mYear = calendar.get(Calendar.YEAR);
-                int mMonth = calendar.get(Calendar.MONTH);
+                int mMonth = calendar.get(Calendar.MONTH) + 1;
                 int mDay = calendar.get(Calendar.DAY_OF_MONTH);
                 String date = mDay + "/" + mMonth + "/" + mYear;
 
                 txtOrderId.setText(currentOrder.getOrderID());
                 txtDate.setText(date);
-                txtTotalAmount.setText(currentOrder.getTotalAmount());
+
+                txtTotalVAT.setText(" SAR " + currentOrder.getTotalVAT());
+                txtTotalAmount.setText(" SAR " + currentOrder.getTotalAmount());
                 txtOrderStatus.setText(currentOrder.getOrderStatus());
+
+                if (txtOrderStatus.getText().equals("DELIVERED") || txtOrderStatus.getText().equals("ASSIGNED")) {
+                    btnAssign.setVisibility(View.GONE);
+                }
+
                 databaseUsers.child(currentOrder.getUserID()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -136,26 +142,28 @@ public class OrderDetails extends AppCompatActivity {
                         String phone = currentUser.getPhoneNumber();
                         String shop = currentUser.getShopName();
                         String address = currentUser.getAddress();
+                        String referredBy = currentUser.getReferredBy();
 
                         txtUsername.setText(name);
                         txtPhoneNumber.setText(phone);
-                        txtShopAddress.setText(shop);
-                        txtShopName.setText(address);
+                        txtShopAddress.setText(address);
+                        txtShopName.setText(shop);
+                        txtReferredBy.setText(referredBy);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AdminOrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 orderAdapter = new OrderAdapter(currentOrder.getOrderList());
                 recyclerViewOrderItems.setAdapter(orderAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(AdminOrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -167,15 +175,19 @@ public class OrderDetails extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OrderDetails.this, SearchItem.class));
+                Intent intent=new Intent(AdminOrderDetails.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
 
             }
         });
     }
 
     private void init() {
-        firebaseAuth=FirebaseAuth.getInstance();
-        firebaseUser=firebaseAuth.getCurrentUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
         txtOrderId = findViewById(R.id.txtOrderID);
         txtUsername = findViewById(R.id.txtUserName);
         txtPhoneNumber = findViewById(R.id.txtPhone);
@@ -188,7 +200,8 @@ public class OrderDetails extends AppCompatActivity {
         deliveryBoyList = new ArrayList<>();
 
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
-
+        txtReferredBy = findViewById(R.id.txtReferredBy);
+        txtTotalVAT = findViewById(R.id.txtTotalVAT);
 
         progressBar = findViewById(R.id.progressBarOrderDetails);
         orderRequestList = new ArrayList<>();

@@ -46,7 +46,7 @@ public class Database extends SQLiteAssetHelper {
         SQLiteDatabase db = getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        String[] sqlSelect = {"ItemID", "ItemName", "ItemCategory", "ItemPrice", "ItemQuantity","ItemQuantityPerPack", "ItemUnit", "ItemImage", "UserID","ItemDescription"};
+        String[] sqlSelect = {"ItemID", "ItemName", "ItemCategory", "ItemPrice", "ItemQuantity", "ItemQuantityPerPack", "ItemUnit", "ItemImage", "UserID", "ItemDescription"};
         String where = "UserID =?";
         String[] selection_Args = {userID};
         String sqlTable = "CartItems";
@@ -71,5 +71,11 @@ public class Database extends SQLiteAssetHelper {
             } while (c.moveToNext());
         }
         return orderList;
+    }
+
+    public void removeFromCart(String itemID, String uid) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = String.format("DELETE FROM CartItems WHERE UserID='%s' and ItemID='%s' ", uid, itemID);
+        db.execSQL(query);
     }
 }

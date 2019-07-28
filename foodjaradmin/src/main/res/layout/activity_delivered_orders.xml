@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorBgGray"
 
-    tools:context="com.zeeshan.foodjaradmin.DeliveredOrders">
+    tools:context="com.zeeshan.foodjaradmin.AdminDeliveredOrders">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"

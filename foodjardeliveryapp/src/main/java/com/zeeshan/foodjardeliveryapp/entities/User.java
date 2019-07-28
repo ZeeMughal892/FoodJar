@@ -1,90 +1,100 @@
 package com.zeeshan.foodjardeliveryapp.entities;
 
-public class User{
-        private String userID;
-        private String userName;
-        private String password;
-        private String role;
-        private String shopName;
-        private String phoneNumber;
-        private String address;
-        private String referredBy;
+public class User {
+    private String userID;
+    private String fullName;
+    private String email;
+    private String password;
+    private String role;
+    private String shopName;
+    private String phoneNumber;
+    private String address;
+    private String referredBy;
 
-        public User() {
-        }
+    public User() {
+    }
 
-        public User(String userID, String userName, String password, String role, String shopName, String phoneNumber, String address, String referredBy) {
-            this.userID = userID;
-            this.userName = userName;
-            this.password = password;
-            this.role = role;
-            this.shopName = shopName;
-            this.phoneNumber = phoneNumber;
-            this.address = address;
-            this.referredBy = referredBy;
-        }
+    public User(String userID, String fullName, String email, String password, String role, String shopName, String phoneNumber, String address, String referredBy) {
+        this.userID = userID;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.shopName = shopName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.referredBy = referredBy;
+    }
 
-        public String getUserID() {
-            return userID;
-        }
+    public String getUserID() {
+        return userID;
+    }
 
-        public void setUserID(String userID) {
-            this.userID = userID;
-        }
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
-        public String getUserName() {
-            return userName;
-        }
+    public String getFullName() {
+        return fullName;
+    }
 
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-        public String getPassword() {
-            return password;
-        }
+    public String getEmail() {
+        return email;
+    }
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-        public String getRole() {
-            return role;
-        }
+    public String getPassword() {
+        return password;
+    }
 
-        public void setRole(String role) {
-            this.role = role;
-        }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-        public String getShopName() {
-            return shopName;
-        }
+    public String getRole() {
+        return role;
+    }
 
-        public void setShopName(String shopName) {
-            this.shopName = shopName;
-        }
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-        public String getPhoneNumber() {
-            return phoneNumber;
-        }
+    public String getShopName() {
+        return shopName;
+    }
 
-        public void setPhoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-        }
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
 
-        public String getAddress() {
-            return address;
-        }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-        public void setAddress(String address) {
-            this.address = address;
-        }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-        public String getReferredBy() {
-            return referredBy;
-        }
+    public String getAddress() {
+        return address;
+    }
 
-        public void setReferredBy(String referredBy) {
-            this.referredBy = referredBy;
-        }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getReferredBy() {
+        return referredBy;
+    }
+
+    public void setReferredBy(String referredBy) {
+        this.referredBy = referredBy;
+    }
 }

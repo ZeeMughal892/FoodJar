@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,13 +20,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.zeeshan.foodjardeliveryapp.entities.DeliveryBoy;
-import com.zeeshan.foodjardeliveryapp.utils.PreferenceUtils;
 
 public class LoginDeliveryBoy extends AppCompatActivity {
 
@@ -66,7 +60,7 @@ public class LoginDeliveryBoy extends AppCompatActivity {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         Toast.makeText(LoginDeliveryBoy.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(LoginDeliveryBoy.this,MyOrders.class));
+                        startActivity(new Intent(LoginDeliveryBoy.this, DeliveryAppPendingOrders.class));
                         finish();
                     }
                     else{
@@ -102,6 +96,7 @@ public class LoginDeliveryBoy extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {

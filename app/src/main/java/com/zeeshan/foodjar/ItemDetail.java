@@ -62,8 +62,10 @@ public class ItemDetail extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ItemDetail.this, SearchItem.class));
-
+                Intent intent=new Intent(ItemDetail.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+               startActivity(intent);
             }
         });
     }
@@ -79,6 +81,7 @@ public class ItemDetail extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnCart) {
             startActivity(new Intent(ItemDetail.this, ShoppingCart.class));
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -93,11 +96,10 @@ public class ItemDetail extends AppCompatActivity {
                     String Price;
                     String Items = "ITEMS";
                     String Stock = "In Stock : " + currentItem.getItemStock() + " " + currentItem.getItemUnit() + " Left";
-
                     if (Items.equals(currentItem.getItemUnit())) {
-                        Price = "Rs. " + currentItem.getItemPrice() + " /Item";
+                        Price = "SAR " + currentItem.getItemPrice() + " /Item";
                     } else {
-                        Price = "Rs. " + currentItem.getItemPrice() + " /" + currentItem.getItemUnit();
+                        Price = "SAR " + currentItem.getItemPrice() + " /" + currentItem.getItemUnit();
                     }
                     txtItemName.setText(currentItem.getItemName());
                     txtItemCategory.setText(currentItem.getItemCategory());
@@ -133,7 +135,6 @@ public class ItemDetail extends AppCompatActivity {
         btnAddToCart = findViewById(R.id.btnAddToCart);
         toolbar = findViewById(R.id.toolbar);
         numberButton = findViewById(R.id.numberButton);
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
     }

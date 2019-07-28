@@ -8,11 +8,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,9 +22,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.zeeshan.foodjar.adapters.AssignDeliveryBoyAdapter;
 import com.zeeshan.foodjar.adapters.OrderAdapter;
-import com.zeeshan.foodjar.adapters.OrderRequestAdapter;
 import com.zeeshan.foodjar.entities.DeliveryBoy;
 import com.zeeshan.foodjar.entities.OrderRequest;
 import com.zeeshan.foodjar.entities.User;
@@ -35,9 +31,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class OrderDetails extends AppCompatActivity {
+public class UserOrderDetails extends AppCompatActivity {
 
-    TextView txtOrderId, txtUsername, txtPhoneNumber, txtShopName, txtShopAddress, txtTotalAmount, txtDate, txtOrderStatus;
+    TextView txtOrderId, txtUsername, txtPhoneNumber, txtShopName, txtShopAddress, txtTotalAmountOrder, txtDate, txtOrderStatus, txtVAT,txtRefferedBy;
     RecyclerView recyclerViewOrderItems;
     List<OrderRequest> orderRequestList;
     Toolbar toolbar;
@@ -47,7 +43,6 @@ public class OrderDetails extends AppCompatActivity {
     OrderRequest currentOrder;
     User currentUser;
     OrderAdapter orderAdapter;
-
     List<DeliveryBoy> deliveryBoyList;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -68,7 +63,7 @@ public class OrderDetails extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
 
     private void loadOrder() {
@@ -78,45 +73,47 @@ public class OrderDetails extends AppCompatActivity {
                 currentOrder = dataSnapshot.getValue(OrderRequest.class);
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(Long.parseLong(currentOrder.getOrderID()));
-
                 int mYear = calendar.get(Calendar.YEAR);
-                int mMonth = calendar.get(Calendar.MONTH);
+                int mMonth = calendar.get(Calendar.MONTH) +1;
                 int mDay = calendar.get(Calendar.DAY_OF_MONTH);
                 String date = mDay + "/" + mMonth + "/" + mYear;
-
                 txtOrderId.setText(currentOrder.getOrderID());
                 txtDate.setText(date);
-                txtTotalAmount.setText(currentOrder.getTotalAmount());
+
+
+                txtVAT.setText(" SAR " + currentOrder.getTotalVAT());
+                txtTotalAmountOrder.setText(" SAR " + currentOrder.getTotalAmount());
                 txtOrderStatus.setText(currentOrder.getOrderStatus());
+
                 databaseUsers.child(currentOrder.getUserID()).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         currentUser = dataSnapshot.getValue(User.class);
-
                         String name = currentUser.getFullName();
                         String phone = currentUser.getPhoneNumber();
                         String shop = currentUser.getShopName();
                         String address = currentUser.getAddress();
-
+                        String referredBy = currentUser.getReferredBy();
                         txtUsername.setText(name);
                         txtPhoneNumber.setText(phone);
-                        txtShopAddress.setText(shop);
-                        txtShopName.setText(address);
+                        txtShopAddress.setText(address);
+                        txtShopName.setText(shop);
+                        txtRefferedBy.setText(referredBy);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserOrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 orderAdapter = new OrderAdapter(currentOrder.getOrderList());
                 recyclerViewOrderItems.setAdapter(orderAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(OrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserOrderDetails.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -128,8 +125,11 @@ public class OrderDetails extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(OrderDetails.this, SearchItem.class));
-
+                Intent intent=new Intent(UserOrderDetails.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -142,12 +142,12 @@ public class OrderDetails extends AppCompatActivity {
         txtPhoneNumber = findViewById(R.id.txtPhone);
         txtShopName = findViewById(R.id.txtShopName);
         txtShopAddress = findViewById(R.id.txtShopAddress);
-        txtTotalAmount = findViewById(R.id.txtTotalAmountOrder);
+        txtTotalAmountOrder = findViewById(R.id.txtTotalAmountOrder);
         txtDate = findViewById(R.id.txtDate);
         txtOrderStatus = findViewById(R.id.txtOrderStatus);
-
+        txtVAT = findViewById(R.id.txtVAT);
         deliveryBoyList = new ArrayList<>();
-
+        txtRefferedBy=findViewById(R.id.txtRefferedBy);
         recyclerViewOrderItems = findViewById(R.id.recyclerViewOrderItems);
 
 

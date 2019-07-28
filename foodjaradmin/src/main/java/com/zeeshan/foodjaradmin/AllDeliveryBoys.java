@@ -61,13 +61,13 @@ public class AllDeliveryBoys extends AppCompatActivity {
                 }
                 deliveryBoyAdapter = new DeliveryBoyAdapter(deliveryBoyList);
                 recyclerViewDeliveryBoys.setAdapter(deliveryBoyAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(AllDeliveryBoys.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
         });
         ed_Search.setFocusable(true);
@@ -93,14 +93,18 @@ public class AllDeliveryBoys extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AllDeliveryBoys.this, SearchItem.class));
+                Intent intent=new Intent(AllDeliveryBoys.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
 
             }
         });
     }
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
     private void init() {
         recyclerViewDeliveryBoys = findViewById(R.id.recyclerViewDeliveryBoys);

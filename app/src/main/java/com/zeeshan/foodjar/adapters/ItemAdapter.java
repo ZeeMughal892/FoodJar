@@ -28,7 +28,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView itemName, itemCategory, itemPrice, itemQuantity, itemDescription;
+        TextView itemName, itemCategory, itemPrice, itemQuantity,  itemDescription;
         ImageView itemImage;
         String itemID;
 
@@ -72,14 +72,15 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
 
         Products products = productsList.get(position);
         String Stock = " " + products.getItemStock() + " " + products.getItemUnit() + " Left";
-        String Price = "Rs. " + products.getItemPrice();
+        String perPack = " " + products.getItemStockPerPack() + " Per Pack";
+        String Price = "SAR " + products.getItemPrice();
 
 
         holder.itemName.setText(products.getItemName());
         holder.itemCategory.setText(products.getItemCategory());
         holder.itemDescription.setText(products.getItemDescription());
         holder.itemPrice.setText(Price);
-        holder.itemQuantity.setText(Stock);
+        holder.itemQuantity.setText(Stock + perPack);
 
         Picasso.get()
                 .load(products.getItemImage())
@@ -123,9 +124,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.MyViewHolder> 
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                productsList.clear();
-                productsList.addAll((List)filterResults.values);
-                notifyDataSetChanged();
+            productsList.clear();
+            productsList.addAll((List) filterResults.values);
+            notifyDataSetChanged();
         }
     };
 

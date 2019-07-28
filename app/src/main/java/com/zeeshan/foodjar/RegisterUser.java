@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class RegisterUser extends AppCompatActivity {
 
     private Button btnSignIn, btnRegister;
     private DatabaseReference databaseUsers, databaseDeliveryBoys;
-
+    ProgressBar progressBarRegister;
     private EditText ed_FullName, ed_Email, ed_Password, ed_ShopName, ed_PhoneNumber, ed_Address;
     private Spinner spinnerReferredBy;
     FirebaseAuth firebaseAuth;
@@ -95,6 +96,7 @@ public class RegisterUser extends AppCompatActivity {
                     DeliveryBoy deliveryBoy = snapshot.getValue(DeliveryBoy.class);
                     deliveryBoyList.add(deliveryBoy);
                 }
+                boyNames.clear();
                 for (int i = 0; i < deliveryBoyList.size(); i++) {
                     boyNames.add(deliveryBoyList.get(i).getBoyName());
                 }
@@ -110,6 +112,7 @@ public class RegisterUser extends AppCompatActivity {
     }
 
     private void addNewUser() {
+
         final String fullName = ed_FullName.getText().toString().trim();
         final String email = ed_Email.getText().toString().trim();
         final String password = ed_Password.getText().toString().trim();
@@ -134,6 +137,7 @@ public class RegisterUser extends AppCompatActivity {
         } else if (TextUtils.isEmpty(referredBy)) {
             Toast.makeText(this, "Please Select Name of Person Who Referred You", Toast.LENGTH_SHORT).show();
         } else {
+            progressBarRegister.setVisibility(View.VISIBLE);
             firebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
@@ -146,6 +150,7 @@ public class RegisterUser extends AppCompatActivity {
                                         .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
+                                        progressBarRegister.setVisibility(View.GONE);
                                         Toast.makeText(RegisterUser.this, "User Registered Successfully", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(RegisterUser.this, LoginUser.class));
                                         finish();
@@ -153,19 +158,21 @@ public class RegisterUser extends AppCompatActivity {
                                 });
                             } else {
                                 Toast.makeText(RegisterUser.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                progressBarRegister.setVisibility(View.GONE);
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(RegisterUser.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    progressBarRegister.setVisibility(View.GONE);
                 }
             });
         }
     }
 
     private void init() {
-        boyNames=new ArrayList<>();
+        boyNames = new ArrayList<>();
         btnSignIn = findViewById(R.id.btnSignIn);
         ed_FullName = findViewById(R.id.ed_FullName);
         ed_Email = findViewById(R.id.ed_Email);
@@ -180,6 +187,7 @@ public class RegisterUser extends AppCompatActivity {
         deliveryBoyList = new ArrayList<>();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
+        progressBarRegister = findViewById(R.id.progressBarRegister);
     }
 
 }

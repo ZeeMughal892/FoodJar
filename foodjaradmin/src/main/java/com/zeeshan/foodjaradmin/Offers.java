@@ -45,6 +45,7 @@ public class Offers extends AppCompatActivity {
     Toolbar toolbar;
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
+    ProgressBar progressBarOffer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +63,16 @@ public class Offers extends AppCompatActivity {
 
     private void addItem() {
         final String title = edTitle.getText().toString().trim();
-        if (TextUtils.isEmpty(title)) {
-            Toast.makeText(this, "Please Enter Offer Title", Toast.LENGTH_SHORT).show();
-        } else {
+        if (!title.isEmpty() && imageUri == null) {
+            progressBarOffer.setVisibility(View.VISIBLE);
+            String offerId = databaseOffers.push().getKey();
+            OffersModel offer = new OffersModel(offerId, title, firebaseUser.getUid());
+            databaseOffers.child(offerId).setValue(offer);
+            Toast.makeText(Offers.this, "Offer Added Successfully", Toast.LENGTH_SHORT).show();
+            progressBarOffer.setVisibility(View.GONE);
+            edTitle.setText(null);
+        } else if (imageUri != null && title.isEmpty()) {
+            progressBarOffer.setVisibility(View.VISIBLE);
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
             fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -73,13 +81,11 @@ public class Offers extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
-
                             String offerId = databaseOffers.push().getKey();
-                            OffersModel offer = new OffersModel(offerId, title, url, firebaseUser.getUid());
+                            OffersModel offer = new OffersModel(offerId, url, firebaseUser.getUid());
                             databaseOffers.child(offerId).setValue(offer);
-                            Toast.makeText(Offers.this, "Offer Added Successfully", Toast.LENGTH_SHORT).show();
-
-
+                            Toast.makeText(Offers.this, "Offer Banner Added Successfully", Toast.LENGTH_SHORT).show();
+                            progressBarOffer.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -89,12 +95,17 @@ public class Offers extends AppCompatActivity {
                     Toast.makeText(Offers.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+            imageUri = null;
+        } else {
+            Toast.makeText(Offers.this, "Please Insert One of the above entries", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+
     }
+
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
@@ -112,6 +123,7 @@ public class Offers extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnSave) {
             addItem();
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -125,7 +137,11 @@ public class Offers extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Offers.this, SearchItem.class));
+                Intent intent=new Intent(Offers.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
 
             }
         });
@@ -156,7 +172,8 @@ public class Offers extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference("offers");
         btnSelectImage = findViewById(R.id.imgSelectOfferImage);
         toolbar = findViewById(R.id.toolbar);
-        edTitle=findViewById(R.id.edTitle);
+        edTitle = findViewById(R.id.edTitle);
+        progressBarOffer = findViewById(R.id.progressBarOffer);
     }
 
 }

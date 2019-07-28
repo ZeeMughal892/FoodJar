@@ -54,7 +54,6 @@ public class LoginUser extends AppCompatActivity {
                 startActivity(new Intent(LoginUser.this, RegisterUser.class));
             }
         });
-
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +73,7 @@ public class LoginUser extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -94,13 +94,21 @@ public class LoginUser extends AppCompatActivity {
             Toast.makeText(this, "Please Enter Password", Toast.LENGTH_SHORT).show();
         } else {
             progressBarLogin.setVisibility(View.VISIBLE);
-
             firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()){
-                        startActivity(new Intent(LoginUser.this,SearchItem.class));
-                        finish();
+                    if (task.isSuccessful()) {
+                        if (rdoRemember.isChecked()) {
+                            PreferenceUtils.saveEmail(email, getApplicationContext());
+                            PreferenceUtils.saveEmail(password, getApplicationContext());
+                            startActivity(new Intent(LoginUser.this, SearchItem.class));
+                            finish();
+                        } else {
+                            startActivity(new Intent(LoginUser.this, SearchItem.class));
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(LoginUser.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -125,9 +133,7 @@ public class LoginUser extends AppCompatActivity {
         firebaseStorage = FirebaseStorage.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        if (PreferenceUtils.getUserID(this) != null) {
-            startActivity(new Intent(LoginUser.this, SearchItem.class));
-        }
+
     }
 
 }

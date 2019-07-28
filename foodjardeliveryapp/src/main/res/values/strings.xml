@@ -76,7 +76,7 @@
     <string name="_20">20</string>
     <string name="remember_me">Remember Me</string>
     <string name="foodjar_delivery_app">FoodJar Delivery App</string>
-    <string name="order_id">ORDER ID</string>
+    <string name="order_id">Order Id</string>
     <string name="order_details">Order Details</string>
     <string name="_1555312355">1555312355</string>
     <string name="muhammad_zeeshan">Muhammad Zeeshan</string>
@@ -95,4 +95,9 @@
     <string name="total_amount_">Total Amount =</string>
     <string name="my_recent_orders">My Recent Orders</string>
     <string name="email">Email</string>
+    <string name="delivered_orders">Delivered Orders</string>
+    <string name="pending_orders">Pending Orders</string>
+    <string name="date">Date</string>
+    <string name="_5_vat">5% VAT =</string>
+    <string name="delete_account">Delete Account</string>
 </resources>

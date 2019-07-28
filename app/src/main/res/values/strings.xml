@@ -92,8 +92,18 @@
     <string name="_">#</string>
     <string name="qty">Qty</string>
     <string name="amount">Amount</string>
-    <string name="total_order_amount">Total Order Amount =</string>
+    <string name="total_order_amount">Total Order Amount = </string>
     <string name="_5556826165">5556826165</string>
     <string name="shop_125_alipur_plaza_basment_islambad">shop_125_alipur_plaza_basment_islambad</string>
     <string name="shop_address">Shop Address</string>
+    <string name="delivered_orders">Delivered Orders</string>
+    <string name="assigned_order">Assigned Order</string>
+    <string name="as">Assigned For Delivery</string>
+    <string name="pending_orders">Pending Orders</string>
+    <string name="assigned_to_deliver">Assigned To Deliver</string>
+    <string name="de">Delivered Orders</string>
+    <string name="note_vat">Note : VAT =</string>
+    <string name="vat">5% VAT = </string>
+    <string name="_50_off_on_buying_10_items">50% Off On Buying 10 Items</string>
+    <string name="delete">DELETE</string>
 </resources>

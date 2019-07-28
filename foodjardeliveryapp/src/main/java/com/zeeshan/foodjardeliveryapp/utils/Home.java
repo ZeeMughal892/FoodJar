@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.zeeshan.foodjardeliveryapp.MyOrders;
+import com.zeeshan.foodjardeliveryapp.DeliveryAppPendingOrders;
 
 public class Home extends Application {
 
@@ -16,9 +16,7 @@ public class Home extends Application {
         FirebaseUser firebaseUser=firebaseAuth.getCurrentUser();
 
         if(firebaseUser!=null){
-            Intent i = new Intent(this, MyOrders.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
+            startActivity(new Intent(Home.this, DeliveryAppPendingOrders.class));
         }
     }
 }

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminAssignedOrders">
+    android:background="@color/colorBgGray"
+
+    tools:context="com.zeeshan.foodjar.UserPendingOrders">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -23,10 +25,9 @@
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:fontFamily="@font/aclonica"
-            android:text="@string/assigned_orders"
+            android:text="@string/pending_orders"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
-
 
     </androidx.appcompat.widget.Toolbar>
 

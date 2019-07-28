@@ -4,14 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,18 +24,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.internal.service.Common;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.zeeshan.foodjar.Interface.RecyclerHelperTouchItemListener;
 import com.zeeshan.foodjar.adapters.CartAdapter;
+import com.zeeshan.foodjar.adapters.CartViewHolder;
 import com.zeeshan.foodjar.database.Database;
 import com.zeeshan.foodjar.entities.Order;
 import com.zeeshan.foodjar.entities.OrderRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.zeeshan.foodjar.entities.Products;
+import com.zeeshan.foodjar.utils.RecyclerItemTouchHelper;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -43,7 +53,7 @@ public class ShoppingCart extends AppCompatActivity {
     DatabaseReference databaseOrderRequest, databaseProducts;
 
     Button btnPlaceOrder;
-    TextView txtTotalAmount, txtTotalLabel;
+    TextView txtTotalAmount, txtTotalLabel, txtTotalVAT, txtVat;
     public static List<Order> orderList = new ArrayList<>();
     CartAdapter cartAdapter;
     ProgressBar progressBarCart;
@@ -55,6 +65,8 @@ public class ShoppingCart extends AppCompatActivity {
     String Stock;
     Products products, currentProduct;
     int remainingStock;
+    int amount = 0, vat = 0, totalAmount = 0;
+    ConstraintLayout rootLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +81,7 @@ public class ShoppingCart extends AppCompatActivity {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         loadListItem();
+
         btnPlaceOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,20 +101,23 @@ public class ShoppingCart extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ShoppingCart.this, SearchItem.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent=new Intent(ShoppingCart.this,SearchItem.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+                finish();
             }
         });
     }
 
     private void placeOrder() {
-        final String orderID=String.valueOf(System.currentTimeMillis());
+        final String orderID = String.valueOf(System.currentTimeMillis());
         final OrderRequest orderRequest = new OrderRequest(
                 orderID,
                 firebaseUser.getUid(),
                 orderList,
-                txtTotalAmount.getText().toString(),
+                String.valueOf(vat),
+                String.valueOf(totalAmount),
                 "PENDING",
                 "None",
                 String.valueOf(orderList.size())
@@ -131,7 +147,7 @@ public class ShoppingCart extends AppCompatActivity {
                         }
                         databaseOrderRequest.child(orderID).setValue(orderRequest);
                         new Database(getBaseContext()).cleanCart();
-                        Intent intent=new Intent(ShoppingCart.this, SearchItem.class);
+                        Intent intent = new Intent(ShoppingCart.this, SearchItem.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -143,17 +159,22 @@ public class ShoppingCart extends AppCompatActivity {
 
     private void loadListItem() {
         orderList = new Database(this).getCarts(firebaseUser.getUid());
+
+
         if (orderList == null || orderList.isEmpty()) {
-            txtTotalLabel.setVisibility(View.INVISIBLE);
-            txtTotalAmount.setVisibility(View.INVISIBLE);
-            recyclerView.setVisibility(View.INVISIBLE);
+            txtTotalLabel.setVisibility(View.GONE);
+            txtTotalAmount.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
             imgEmptyCart.setVisibility(View.VISIBLE);
             btnPlaceOrder.setText(R.string.continue_shopping);
-            progressBarCart.setVisibility(View.INVISIBLE);
+            progressBarCart.setVisibility(View.GONE);
+            txtVat.setVisibility(View.GONE);
+            txtTotalVAT.setVisibility(View.GONE);
         } else {
             cartAdapter = new CartAdapter(orderList);
             recyclerView.setAdapter(cartAdapter);
-            progressBarCart.setVisibility(View.INVISIBLE);
+            progressBarCart.setVisibility(View.GONE);
+
             for (int i = 0; i < orderList.size(); i++) {
                 databaseProducts.child(orderList.get(i).getItemID()).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -170,22 +191,24 @@ public class ShoppingCart extends AppCompatActivity {
                     }
                 });
             }
-           /* int total = 0;
+
+            amount = 0;
+            vat = 0;
+            totalAmount = 0;
+
             for (Order order : orderList) {
-                total += (Integer.parseInt(order.getItemPrice())) * (Integer.parseInt(order.getItemQuantity()));
-                Locale locale = new Locale("en", "US");
-                NumberFormat fnt = NumberFormat.getCurrencyInstance(locale);
-                txtTotalAmount.setText(fnt.format(total));
-            }*/
-            int total = 0;
-            for (Order order : orderList) {
-                total += (Integer.parseInt(order.getItemPrice())) * (Integer.parseInt(order.getItemQuantity()));
+                amount += (Integer.parseInt(order.getItemPrice())) * (Integer.parseInt(order.getItemQuantity()));
             }
-            txtTotalAmount.setText("Rs. " + total);
+            vat = (amount * 5) / 100;
+            txtTotalVAT.setText(" SAR " + vat);
+            totalAmount = vat + amount;
+            txtTotalAmount.setText(" SAR " + totalAmount);
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+    }
 
     private void init() {
         firebaseAuth = FirebaseAuth.getInstance();
@@ -200,7 +223,9 @@ public class ShoppingCart extends AppCompatActivity {
         progressBarCart = findViewById(R.id.progressBarCart);
         imgEmptyCart = findViewById(R.id.imgEmpty);
         productsList = new ArrayList<>();
+        txtTotalVAT = findViewById(R.id.txtTotalVAT);
+        txtVat = findViewById(R.id.txtVAT);
+        rootLayout=findViewById(R.id.rootLayout);
     }
-
 
 }
