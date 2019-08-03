@@ -73,14 +73,12 @@ public class AddNewItem extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.btnSave) {
             addItem();
-            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void addItem() {
-        progressBar.setVisibility(View.VISIBLE);
 
         final String itemName = ed_Name.getText().toString().trim();
         final String itemCategory = spinnerCategories.getSelectedItem().toString().trim();
@@ -103,9 +101,8 @@ public class AddNewItem extends AppCompatActivity {
         } else if (imageUri == null) {
             Toast.makeText(this, "Please Select an Item Image", Toast.LENGTH_SHORT).show();
         } else {
-
+            progressBar.setVisibility(View.VISIBLE);
             final StorageReference fileReference = storageReference.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
-
             fileReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -113,7 +110,6 @@ public class AddNewItem extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             String url = uri.toString();
-
                             String itemId = databaseProducts.push().getKey();
                             Items items = new Items(itemId, itemName, itemCategory, itemQuantity, itemQuantityPerPack, itemUnit, itemPrice, url, itemDescription, firebaseUser.getUid());
                             databaseProducts.child(itemId).setValue(items);
@@ -158,15 +154,14 @@ public class AddNewItem extends AppCompatActivity {
     private void setUpToolbar() {
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         toolbar.setTitle("");
-
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent=new Intent(AddNewItem.this,SearchItem.class);
+                Intent intent = new Intent(AddNewItem.this, SearchItem.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-               startActivity(intent);
+                startActivity(intent);
                 finish();
             }
         });
@@ -185,7 +180,6 @@ public class AddNewItem extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null) {
             imageUri = data.getData();
-
             Picasso.get().load(imageUri).into(btnSelectImage);
         }
     }

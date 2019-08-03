@@ -43,7 +43,7 @@ public class UserAssignedOrders extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_delivered_orders);
+        setContentView(R.layout.activity_assigned_orders);
 
         init();
         setUpToolbar();

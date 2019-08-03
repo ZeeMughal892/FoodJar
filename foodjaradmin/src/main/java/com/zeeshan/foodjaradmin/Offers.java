@@ -61,7 +61,7 @@ public class Offers extends AppCompatActivity {
         });
     }
 
-    private void addItem() {
+    private void addOffer() {
         final String title = edTitle.getText().toString().trim();
         if (!title.isEmpty() && imageUri == null) {
             progressBarOffer.setVisibility(View.VISIBLE);
@@ -122,8 +122,7 @@ public class Offers extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.btnSave) {
-            addItem();
-            finish();
+            addOffer();
             return true;
         }
         return super.onOptionsItemSelected(item);
